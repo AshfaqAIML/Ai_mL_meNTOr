@@ -6,204 +6,248 @@
 <title>ML Mentor · AI/ML Engineering Tutor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#f2f6f1;
-    --paper-2:#e8efe7;
-    --ink:#0d231c;
-    --ink-soft:#41594e;
-    --pine:#0c211a;
-    --pine-2:#133227;
-    --pine-3:#1a4233;
-    --mint:#7fe0b2;
-    --emerald:#0e8f62;
-    --emerald-deep:#0a6d4b;
-    --amber:#e9a13b;
-    --line:rgba(13,35,28,.10);
-    --shadow:0 10px 30px rgba(13,35,28,.10);
+    --bg-0:#070d0b; --bg-1:#0a1411; --bg-2:#0e1b16; --panel-a:rgba(255,255,255,.028); --panel-b:rgba(255,255,255,.010);
+    --ink:#e9f4ef; --ink-soft:#9bb3a9; --ink-faint:#5d776d;
+    --line:rgba(150,205,182,.11); --line-2:rgba(150,205,182,.06);
+    --mint:#4fe0c0; --mint-deep:#1f9c84; --mint-soft:rgba(79,224,192,.12); --mint-glow:rgba(79,224,192,.30);
+    --amber:#f5b544; --amber-deep:#d9962a; --amber-soft:rgba(245,181,68,.13);
+    --card-a:#13241e; --card-b:#0f1d18; --user-a:#16433a; --user-b:#0f2c25;
+    --shadow:0 18px 46px rgba(0,0,0,.42); --shadow-sm:0 8px 22px rgba(0,0,0,.34);
+    --r-sm:8px; --r:14px; --r-lg:18px;
+    --disp:"Bricolage Grotesque",sans-serif; --body:"DM Sans",sans-serif; --mono:"JetBrains Mono",monospace;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  ::selection{background:var(--amber);color:var(--ink)}
+  ::selection{background:var(--amber);color:#1a1206}
   html,body{height:100%}
-  body{
-    font-family:"IBM Plex Sans",sans-serif;
-    color:var(--ink);
-    background:var(--paper);
-    overflow:hidden;
-  }
-  body::before{
-    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-    background:
-      linear-gradient(var(--line) 1px, transparent 1px) 0 0/100% 28px,
-      linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0/28px 100%;
-    opacity:.55;
-  }
-  .curve{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-  .curve path{fill:none;stroke-width:2.5;stroke-dasharray:1400;animation:drift 14s linear infinite}
-  .curve .c1{stroke:var(--emerald);opacity:.14}
-  .curve .c2{stroke:var(--amber);opacity:.12;animation-duration:20s;animation-direction:reverse}
-  @keyframes drift{to{stroke-dashoffset:-2800}}
+  body{font-family:var(--body);color:var(--ink);background:var(--bg-0);overflow:hidden;-webkit-font-smoothing:antialiased}
 
-  .app{position:relative;z-index:1;display:grid;grid-template-columns:320px 1fr;height:100vh}
+  /* ---------- ambient living background ---------- */
+  .ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .ambient canvas{position:absolute;inset:0;width:100%;height:100%}
+  .glow{position:absolute;border-radius:50%;filter:blur(80px);opacity:.5;animation:float 22s ease-in-out infinite}
+  .glow-mint{width:46vw;height:46vw;right:-12vw;top:-14vw;background:radial-gradient(circle,rgba(79,224,192,.16),transparent 65%)}
+  .glow-amber{width:40vw;height:40vw;left:-12vw;bottom:-16vw;background:radial-gradient(circle,rgba(245,181,68,.12),transparent 65%);animation-duration:28s;animation-direction:reverse}
+  @keyframes float{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(3%,4%) scale(1.08)}}
+  .dots{position:absolute;inset:0;background-image:radial-gradient(rgba(150,205,182,.10) 1px,transparent 1.4px);background-size:30px 30px;mask-image:radial-gradient(120% 100% at 50% 30%,#000,transparent 80%);opacity:.5}
+  .grain{position:absolute;inset:-50%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");opacity:.04;mix-blend-mode:overlay}
+  .vignette{position:absolute;inset:0;background:radial-gradient(120% 120% at 50% 40%,transparent 55%,rgba(0,0,0,.55))}
 
-  .sidebar{
-    background:var(--pine);color:#dcefe4;
-    padding:26px 22px;display:flex;flex-direction:column;gap:18px;
-    overflow-y:auto;border-right:1px solid rgba(127,224,178,.12);
-  }
-  .brand{display:flex;align-items:center;gap:12px}
-  .logo{width:42px;height:42px;flex:none}
-  .logo path{stroke:var(--mint);stroke-width:2;fill:none}
-  .logo circle{fill:var(--mint)}
-  .logo .pulse{animation:pulse 2.2s ease-in-out infinite;transform-origin:20px 10px}
-  @keyframes pulse{0%,100%{opacity:.4;r:3}50%{opacity:1;r:5}}
-  .brand h2{font-family:"Space Grotesk";font-size:22px;letter-spacing:-.02em;color:#fff;line-height:1}
-  .brand small{display:block;font-family:"IBM Plex Mono";font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mint);margin-top:5px}
+  .app{position:relative;z-index:1;display:grid;grid-template-columns:330px 1fr;height:100vh}
 
-  .panel{background:var(--pine-2);border:1px solid rgba(127,224,178,.12);border-radius:10px;padding:16px}
-  .panel-label{font-family:"IBM Plex Mono";font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mint);margin-bottom:10px}
+  /* ---------- sidebar ---------- */
+  .sidebar{background:linear-gradient(180deg,#0a1411,#060c0a);border-right:1px solid var(--line);padding:24px 20px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;position:relative}
+  .sidebar::after{content:"";position:absolute;top:0;right:0;width:1px;height:100%;background:linear-gradient(180deg,transparent,var(--mint-glow),transparent);opacity:.5}
+  .brand{display:flex;align-items:center;gap:13px;padding:2px 4px 4px}
+  .logo{width:46px;height:46px;flex:none;filter:drop-shadow(0 0 10px var(--mint-glow))}
+  .logo .orbit{transform-origin:23px 23px;animation:spin 16s linear infinite}
+  .logo .draw{stroke:var(--mint);stroke-width:2;fill:none;stroke-dasharray:64;stroke-linecap:round;animation:draw 2.2s ease forwards}
+  .logo .nd{fill:var(--mint)}
+  .logo .pulse{fill:var(--amber);transform-origin:23px 9px;animation:nodepulse 2.2s ease-in-out infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes draw{from{stroke-dashoffset:64}to{stroke-dashoffset:0}}
+  @keyframes nodepulse{0%,100%{opacity:.5;r:3}50%{opacity:1;r:4.6}}
+  .brand h2{font-family:var(--disp);font-weight:800;font-size:25px;letter-spacing:-.02em;color:#fff;line-height:.95}
+  .brand small{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mint);margin-top:6px}
 
-  .status-row{display:flex;align-items:center;gap:9px;font-size:13.5px}
-  .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);flex:none;animation:glow 1.8s ease-in-out infinite}
-  .dot.live{background:var(--mint)}
-  @keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(233,161,59,.5)}50%{box-shadow:0 0 0 6px rgba(233,161,59,0)}}
-  .streak{margin-left:auto;font-family:"IBM Plex Mono";font-size:11px;background:rgba(233,161,59,.15);color:var(--amber);border:1px solid rgba(233,161,59,.35);padding:3px 9px;border-radius:999px}
+  .panel{background:linear-gradient(180deg,var(--panel-a),var(--panel-b));border:1px solid var(--line);border-radius:var(--r);padding:16px;position:relative;overflow:hidden;opacity:0;animation:rise .7s forwards}
+  .panel::before{content:"";position:absolute;left:0;top:0;height:1px;width:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent)}
+  .panel.p1{animation-delay:.05s}.panel.p2{animation-delay:.13s}.panel.p3{animation-delay:.21s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  .plabel{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mint);display:flex;align-items:center;gap:7px;margin-bottom:12px}
+  .plabel::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--mint);box-shadow:0 0 8px var(--mint)}
 
-  .spark{width:100%;height:34px;margin-top:12px}
-  .spark polyline{fill:none;stroke:var(--mint);stroke-width:2;stroke-linecap:round;stroke-dasharray:220;animation:drift 6s linear infinite}
+  .status-row{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink-soft)}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);flex:none;animation:beat 1.7s infinite}
+  .dot.live{background:var(--mint);animation-name:beatOk}
+  @keyframes beat{0%,100%{box-shadow:0 0 0 0 rgba(245,181,68,.5)}50%{box-shadow:0 0 0 6px rgba(245,181,68,0)}}
+  @keyframes beatOk{0%,100%{box-shadow:0 0 0 0 rgba(79,224,192,.5)}50%{box-shadow:0 0 0 6px rgba(79,224,192,0)}}
+  .streak{margin-left:auto;font-family:var(--mono);font-size:10.5px;background:var(--amber-soft);color:var(--amber);border:1px solid rgba(245,181,68,.3);padding:3px 9px;border-radius:999px}
+  .spark{width:100%;height:38px;margin-top:12px;display:block}
+  .spark polyline{fill:none;stroke:var(--mint);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 4px var(--mint-glow))}
+  .spark .flash{animation:sflash .6s ease}
+  @keyframes sflash{0%{opacity:.2}100%{opacity:1}}
+  .spark-cap{font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);letter-spacing:.08em;margin-top:4px}
 
-  .road-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
-  .road-pct{font-family:"Space Grotesk";font-size:34px;font-weight:700;color:#fff;line-height:1}
-  .road-pct span{font-size:14px;color:var(--mint);font-weight:500}
-  .bar{height:7px;background:var(--pine-3);border-radius:99px;overflow:hidden;margin-bottom:14px}
-  .bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--emerald),var(--mint));border-radius:99px;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+  .jhead{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:6px}
+  .jcount{font-family:var(--disp);font-weight:800;font-size:30px;line-height:.8;color:#fff;letter-spacing:-.03em}
+  .jcount span{font-size:13px;color:var(--mint);font-weight:600}
+  .jsub{font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);letter-spacing:.06em;margin-bottom:14px}
 
-  .topic{display:grid;grid-template-columns:22px 1fr 16px;align-items:center;gap:8px;padding:7px 8px;border-radius:7px;border-left:3px solid transparent;transition:all .18s ease;cursor:default}
-  .topic:hover{background:rgba(127,224,178,.07);transform:translateX(4px)}
-  .topic .num{font-family:"IBM Plex Mono";font-size:11px;color:#6f957f}
-  .topic .lbl{font-size:13.5px;color:#c9e2d3}
-  .topic .st{font-size:12px;text-align:right}
-  .topic.done .lbl{color:#8fb8a0;text-decoration:line-through}
-  .topic.done .st{color:var(--mint)}
-  .topic.current{border-left-color:var(--amber);background:rgba(233,161,59,.08)}
-  .topic.current .st{color:var(--amber);animation:glow 1.8s infinite;border-radius:50%}
-  .topic.todo .st{color:#4c6b5b}
+  .topic{display:grid;grid-template-columns:24px 1fr;gap:13px;position:relative;padding:8px 8px 8px 4px;border-radius:var(--r-sm);transition:transform .18s,background .18s;cursor:default}
+  .topic:hover{transform:translateX(5px);background:linear-gradient(90deg,rgba(79,224,192,.06),transparent)}
+  .rail{position:relative;display:flex;flex-direction:column;align-items:center}
+  .node{width:17px;height:17px;border-radius:50%;border:2px solid var(--ink-faint);background:var(--bg-1);z-index:2;display:grid;place-items:center;transition:.3s;flex:none}
+  .node svg{width:9px;height:9px;opacity:0;transition:.3s}
+  .node svg path{stroke:var(--bg-0);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .conn{width:2px;flex:1;min-height:14px;background:var(--line-2);position:relative;overflow:hidden;margin:2px 0}
+  .conn::after{content:"";position:absolute;inset:0;background:linear-gradient(var(--mint),var(--mint-deep));transform:scaleY(0);transform-origin:top;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+  .topic:last-child .conn{display:none}
+  .t-label{font-size:13.5px;color:var(--ink-soft);line-height:1.2;padding-top:1px;transition:color .3s}
+  .t-meta{font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-top:3px}
+  .topic.done .node{border-color:var(--mint);background:var(--mint)}
+  .topic.done .node svg{opacity:1}
+  .topic.done .conn::after{transform:scaleY(1)}
+  .topic.done .t-label{color:#7fa493}
+  .topic.done .t-meta{color:var(--mint-deep)}
+  .topic.current .node{border-color:var(--amber);box-shadow:0 0 0 4px var(--amber-soft);animation:beat 1.7s infinite}
+  .topic.current .conn::after{transform:scaleY(.45);background:linear-gradient(var(--amber),transparent)}
+  .topic.current .t-label{color:#fff;font-weight:500}
+  .topic.current .t-meta{color:var(--amber)}
 
-  .chips-profile{display:flex;flex-wrap:wrap;gap:7px}
-  .pchip{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.06em;border:1px solid rgba(127,224,178,.25);color:var(--mint);padding:4px 10px;border-radius:999px;transition:all .18s}
-  .pchip:hover{background:rgba(127,224,178,.12);transform:translateY(-2px)}
+  .chips-p{display:flex;flex-wrap:wrap;gap:7px}
+  .pchip{font-family:var(--mono);font-size:10px;letter-spacing:.04em;border:1px solid rgba(79,224,192,.22);color:var(--mint);padding:4px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:6px;transition:.18s}
+  .pchip::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--mint);opacity:.7}
+  .pchip:hover{background:var(--mint-soft);transform:translateY(-2px)}
+  .side-foot{margin-top:auto;font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);letter-spacing:.06em;padding:6px 4px 0;line-height:1.7}
 
-  .side-foot{margin-top:auto;font-family:"IBM Plex Mono";font-size:10px;color:#5d8270;letter-spacing:.08em}
-
+  /* ---------- chat ---------- */
   .chat{display:flex;flex-direction:column;height:100vh;min-width:0}
-  .chat-top{
-    display:flex;align-items:center;justify-content:space-between;gap:16px;
-    padding:18px 34px;border-bottom:1px solid var(--line);
-    background:rgba(242,246,241,.85);backdrop-filter:blur(6px);
-  }
-  .chat-top h1{font-family:"Space Grotesk";font-size:21px;letter-spacing:-.02em}
-  .chat-top .sub{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:3px}
-  .mode-badge{display:flex;align-items:center;gap:8px;font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;border:1px solid var(--line);background:#fff;padding:7px 13px;border-radius:999px;transition:all .3s}
-  .mini-progress{display:none;align-items:center;gap:10px;font-family:"IBM Plex Mono";font-size:11px;color:var(--ink-soft)}
-  .mini-bar{width:90px;height:6px;background:var(--paper-2);border-radius:99px;overflow:hidden}
-  .mini-fill{height:100%;width:0%;background:var(--emerald);transition:width .9s ease}
+  .chat-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 30px;border-bottom:1px solid var(--line);background:rgba(7,13,11,.55);backdrop-filter:blur(12px)}
+  .ct-title{font-family:var(--disp);font-weight:700;font-size:23px;letter-spacing:-.02em}
+  .ct-sub{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);margin-top:4px}
+  .ct-right{display:flex;align-items:center;gap:16px}
+  .mode{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;border:1px solid var(--line);background:rgba(255,255,255,.03);padding:7px 13px;border-radius:999px;color:var(--ink-soft)}
+  .mode .mode-state{color:var(--amber);font-weight:700}
+  .mode.live .mode-state{color:var(--mint)}
+  .mode-hint{color:var(--ink-faint)}
+  .ring{position:relative;width:48px;height:48px;flex:none}
+  .ring svg{transform:rotate(-90deg)}
+  .ring .track{fill:none;stroke:var(--line);stroke-width:4}
+  .ring .prog{fill:none;stroke:var(--mint);stroke-width:4;stroke-linecap:round;filter:drop-shadow(0 0 4px var(--mint-glow));transition:stroke-dashoffset 1s cubic-bezier(.2,.8,.2,1)}
+  .ring-num{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--disp);font-weight:700;font-size:12px;color:#fff}
 
-  .messages{flex:1;overflow-y:auto;padding:30px 34px 10px;scroll-behavior:smooth}
-  .msg-wrap{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
-  .msg{display:flex;gap:12px;animation:pop .38s cubic-bezier(.2,.8,.3,1.2) both}
-  @keyframes pop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
-  .avatar{width:32px;height:32px;flex:none;border-radius:9px;background:var(--pine);display:grid;place-items:center;margin-top:2px}
-  .avatar svg{width:18px;height:18px}
-  .avatar circle{fill:var(--mint)}
-  .avatar path{stroke:var(--mint);stroke-width:2;fill:none}
-  .bubble{max-width:82%;padding:14px 17px;font-size:14.5px;line-height:1.65}
-  .msg.agent .bubble{background:#fff;border:1px solid var(--line);border-radius:4px 16px 16px 16px;box-shadow:0 3px 14px rgba(13,35,28,.06)}
+  .messages{flex:1;overflow-y:auto;padding:30px 30px 12px;scroll-behavior:smooth}
+  .msg-wrap{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+  .msg{display:flex;gap:13px;animation:pop .4s cubic-bezier(.2,.8,.3,1.2) both}
+  @keyframes pop{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+  .avatar{width:36px;height:36px;flex:none;border-radius:11px;background:linear-gradient(150deg,#16302700,#0c1a15);border:1px solid var(--mint-soft);display:grid;place-items:center;margin-top:2px;box-shadow:0 0 0 1px rgba(0,0,0,.3),0 6px 16px rgba(0,0,0,.4);position:relative}
+  .avatar svg{width:19px;height:19px}
+  .avatar .nd{fill:var(--mint)}.avatar .ln{stroke:var(--mint);stroke-width:2;fill:none}
+  .avatar::after{content:"";position:absolute;inset:-3px;border-radius:13px;border:1px solid var(--mint-glow);opacity:0;animation:avpulse 3s ease-in-out infinite}
+  @keyframes avpulse{0%,70%,100%{opacity:0;transform:scale(.9)}85%{opacity:.6;transform:scale(1)}}
+  .bubble{position:relative;max-width:80%;padding:15px 18px;font-size:14.5px;line-height:1.66}
+  .msg.agent .bubble{background:linear-gradient(160deg,var(--card-a),var(--card-b));border:1px solid var(--line);border-radius:5px 16px 16px 16px;box-shadow:var(--shadow-sm)}
+  .msg.agent .bubble::before{content:"";position:absolute;left:14px;right:14px;top:0;height:1px;background:linear-gradient(90deg,transparent,var(--mint-glow),transparent)}
   .msg.user{justify-content:flex-end}
-  .msg.user .bubble{background:var(--pine);color:#e6f5ec;border-radius:16px 4px 16px 16px}
+  .msg.user .bubble{background:linear-gradient(160deg,var(--user-a),var(--user-b));border:1px solid rgba(79,224,192,.18);color:#eafff7;border-radius:16px 5px 16px 16px;box-shadow:var(--shadow-sm),inset 0 1px 0 rgba(255,255,255,.06)}
+  .bubble{transition:transform .18s}
+  .msg:hover .bubble{transform:translateY(-1px)}
 
-  .bubble p{margin:0 0 10px}
-  .bubble p:last-child{margin-bottom:0}
-  .bubble h4{font-family:"Space Grotesk";font-size:15.5px;margin:2px 0 9px;letter-spacing:-.01em}
-  .bubble ul,.bubble ol{margin:0 0 10px;padding-left:20px}
-  .bubble li{margin:4px 0}
-  .bubble strong{font-weight:600}
-  .bubble code.inline{font-family:"IBM Plex Mono";font-size:12.5px;background:rgba(14,143,98,.10);color:var(--emerald-deep);padding:1.5px 6px;border-radius:4px}
+  .bubble p{margin:0 0 11px}.bubble p:last-child{margin-bottom:0}
+  .md-h{font-family:var(--disp);font-weight:700;font-size:16px;letter-spacing:-.01em;margin:2px 0 10px;display:flex;align-items:center;gap:9px;color:#fff}
+  .md-h::before{content:"";width:4px;height:15px;border-radius:2px;background:linear-gradient(var(--mint),var(--mint-deep));flex:none}
+  .bubble ul.md-ul,.bubble ol.md-ol{margin:0 0 11px;padding-left:4px;list-style:none}
+  .bubble ul.md-ul li{position:relative;padding-left:20px;margin:6px 0}
+  .bubble ul.md-ul li::before{content:"";position:absolute;left:2px;top:8px;width:6px;height:6px;border-radius:1px;background:var(--mint);transform:rotate(45deg);opacity:.85}
+  .bubble ol.md-ol{counter-reset:o}
+  .bubble ol.md-ol li{position:relative;padding-left:24px;margin:6px 0;counter-increment:o}
+  .bubble ol.md-ol li::before{content:counter(o);position:absolute;left:0;top:0;font-family:var(--mono);font-size:11px;color:var(--mint);font-weight:700}
+  .bubble strong{font-weight:600;color:#fff}
+  .msg.user .bubble strong{color:#fff}
+  code.inline{font-family:var(--mono);font-size:12.5px;background:var(--mint-soft);color:#9ff0d8;padding:1.5px 6px;border-radius:5px;border:1px solid rgba(79,224,192,.15)}
 
-  .codeblock{margin:10px 0;border-radius:9px;overflow:hidden;border:1px solid rgba(127,224,178,.15)}
-  .codehead{display:flex;justify-content:space-between;align-items:center;background:var(--pine-2);padding:6px 12px}
-  .codehead span{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--amber)}
-  .copybtn{font-family:"IBM Plex Mono";font-size:10.5px;background:none;border:1px solid rgba(127,224,178,.3);color:var(--mint);padding:2px 9px;border-radius:5px;cursor:pointer;transition:all .15s}
-  .copybtn:hover{background:var(--mint);color:var(--pine)}
-  .codeblock pre{background:var(--pine);padding:13px 15px;overflow-x:auto}
-  .codeblock code{font-family:"IBM Plex Mono";font-size:12.5px;line-height:1.6;color:#d7efe2}
+  .codeblock{margin:12px 0;border-radius:11px;overflow:hidden;border:1px solid rgba(79,224,192,.14);background:#08110d;box-shadow:inset 0 0 0 1px rgba(0,0,0,.3)}
+  .cb-bar{display:flex;align-items:center;gap:10px;background:linear-gradient(180deg,#0d1a15,#0a140f);padding:8px 12px;border-bottom:1px solid var(--line-2)}
+  .cb-dots{display:flex;gap:5px}.cb-dots i{width:9px;height:9px;border-radius:50%;display:block}
+  .cb-dots i:nth-child(1){background:var(--mint);opacity:.7}.cb-dots i:nth-child(2){background:var(--amber);opacity:.7}.cb-dots i:nth-child(3){background:var(--ink-faint);opacity:.6}
+  .cb-lang{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin-left:2px}
+  .cb-copy{margin-left:auto;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;background:none;border:1px solid rgba(79,224,192,.28);color:var(--mint);padding:3px 10px;border-radius:6px;cursor:pointer;transition:.15s}
+  .cb-copy:hover{background:var(--mint);color:var(--bg-0)}
+  .cb-body{display:flex}
+  .cb-gutter{padding:12px 0;text-align:right;user-select:none;border-right:1px solid var(--line-2);background:rgba(0,0,0,.18)}
+  .cb-gutter span{display:block;font-family:var(--mono);font-size:11px;line-height:1.65;color:#3f5a50;padding:0 10px}
+  .codeblock pre{flex:1;overflow-x:auto;padding:12px 14px}
+  .codeblock code{font-family:var(--mono);font-size:12.5px;line-height:1.65;color:#cfe6dc;white-space:pre}
+  .tok-com{color:#5f7d72;font-style:italic}.tok-str{color:#9ece6a}.tok-key{color:#7dcfff}.tok-num{color:#ff9e64}
 
-  .typing .bubble{display:flex;gap:5px;align-items:center;padding:16px 18px}
-  .typing .d{width:7px;height:7px;border-radius:50%;background:var(--emerald);animation:blink 1s infinite}
-  .typing .d:nth-child(2){animation-delay:.15s}
-  .typing .d:nth-child(3){animation-delay:.3s}
+  .msg-actions{position:absolute;top:8px;right:10px;opacity:0;transition:.18s}
+  .msg.agent:hover .msg-actions{opacity:1}
+  .msg-actions button{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;background:rgba(0,0,0,.4);border:1px solid var(--line);color:var(--ink-soft);padding:3px 8px;border-radius:6px;cursor:pointer;transition:.15s}
+  .msg-actions button:hover{color:var(--mint);border-color:var(--mint-soft)}
+
+  .typing .bubble{display:flex;gap:6px;align-items:center;padding:17px 19px}
+  .typing .d{width:7px;height:7px;border-radius:50%;background:var(--mint);animation:blink 1s infinite}
+  .typing .d:nth-child(2){animation-delay:.15s}.typing .d:nth-child(3){animation-delay:.3s}
   @keyframes blink{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-4px)}}
 
-  .composer{padding:14px 34px 24px}
-  .composer-inner{max-width:780px;margin:0 auto}
-  .quick{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none}
-  .quick::-webkit-scrollbar{display:none}
-  .chip{
-    flex:none;font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.03em;
-    background:#fff;border:1px solid var(--line);color:var(--ink-soft);
-    padding:7px 14px;border-radius:999px;cursor:pointer;
-    transition:all .18s ease;
-  }
-  .chip:hover{border-color:var(--emerald);color:var(--emerald-deep);transform:translateY(-2px);box-shadow:0 4px 12px rgba(14,143,98,.15)}
-  .chip:active{transform:translateY(0) scale(.97)}
-  .inputbar{display:flex;align-items:flex-end;gap:10px;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:9px 9px 9px 16px;box-shadow:var(--shadow);transition:border-color .2s}
-  .inputbar:focus-within{border-color:var(--emerald)}
-  textarea{flex:1;border:none;outline:none;resize:none;font-family:"IBM Plex Sans";font-size:14.5px;line-height:1.5;max-height:140px;background:none;color:var(--ink)}
-  textarea::placeholder{color:#93a89c}
-  .send{
-    width:42px;height:42px;flex:none;border:none;border-radius:11px;cursor:pointer;
-    background:var(--emerald);display:grid;place-items:center;
-    transition:all .18s ease;
-  }
-  .send:hover{background:var(--emerald-deep);transform:translateY(-2px);box-shadow:0 6px 16px rgba(14,143,98,.35)}
-  .send:active{transform:scale(.92)}
-  .send:disabled{background:#b9c9be;cursor:not-allowed;transform:none;box-shadow:none}
-  .send svg{width:18px;height:18px;stroke:#fff;stroke-width:2.4;fill:none}
-  .hint{font-family:"IBM Plex Mono";font-size:10px;color:#93a89c;letter-spacing:.06em;margin-top:8px;text-align:right}
+  .tobottom{position:absolute;right:34px;bottom:128px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:rgba(14,27,22,.9);backdrop-filter:blur(8px);color:var(--mint);display:none;place-items:center;cursor:pointer;box-shadow:var(--shadow-sm);transition:.18s;z-index:5}
+  .tobottom.show{display:grid}.tobottom:hover{transform:translateY(-2px);border-color:var(--mint-soft)}
+  .tobottom svg{width:16px;height:16px;stroke:currentColor;stroke-width:2.4;fill:none}
 
-  .messages::-webkit-scrollbar,.sidebar::-webkit-scrollbar{width:8px}
-  .messages::-webkit-scrollbar-thumb{background:#c6d6c9;border-radius:99px}
-  .sidebar::-webkit-scrollbar-thumb{background:var(--pine-3);border-radius:99px}
+  /* ---------- composer ---------- */
+  .composer{padding:12px 30px 22px;position:relative}
+  .composer-inner{max-width:820px;margin:0 auto}
+  .offline{display:none;align-items:center;gap:10px;background:var(--amber-soft);border:1px solid rgba(245,181,68,.3);color:#f3cf8f;border-radius:12px;padding:9px 14px;font-size:12.5px;margin-bottom:10px}
+  .offline.show{display:flex}
+  .offline svg{width:15px;height:15px;stroke:var(--amber);stroke-width:2;fill:none;flex:none}
+  .offline b{color:var(--amber);font-weight:600}
+  .offline code{font-family:var(--mono);font-size:11px;background:rgba(0,0,0,.25);padding:1px 6px;border-radius:4px;color:#f3cf8f}
+  .offline .x{margin-left:auto;background:none;border:none;color:#f3cf8f;cursor:pointer;font-size:16px;line-height:1;opacity:.7;padding:0 2px}.offline .x:hover{opacity:1}
+  .now-line{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--ink-faint);display:flex;align-items:center;gap:8px;margin-bottom:9px;min-height:14px}
+  .now-line .ndot{width:6px;height:6px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber);animation:beat 1.7s infinite}
+  .now-line b{color:var(--mint);font-weight:500}
+  .quick{display:flex;gap:8px;overflow-x:auto;padding-bottom:11px;scrollbar-width:none}
+  .quick::-webkit-scrollbar{display:none}
+  .chip{flex:none;display:inline-flex;align-items:center;gap:7px;font-family:var(--body);font-size:12.5px;font-weight:500;background:rgba(255,255,255,.03);border:1px solid var(--line);color:var(--ink-soft);padding:8px 14px;border-radius:999px;cursor:pointer;transition:.18s}
+  .chip svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;transition:transform .18s}
+  .chip:hover{border-color:var(--mint);color:var(--mint);background:var(--mint-soft);transform:translateY(-2px);box-shadow:0 6px 16px rgba(79,224,192,.12)}
+  .chip:hover svg{transform:translateX(2px)}
+  .chip:active{transform:translateY(0) scale(.97)}
+  .inputbar{display:flex;align-items:flex-end;gap:10px;background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.015));border:1.5px solid var(--line);border-radius:16px;padding:9px 9px 9px 17px;backdrop-filter:blur(10px);box-shadow:var(--shadow);transition:border-color .2s,box-shadow .2s}
+  .inputbar:focus-within{border-color:var(--mint);box-shadow:var(--shadow),0 0 0 4px var(--mint-soft)}
+  textarea{flex:1;border:none;outline:none;resize:none;font-family:var(--body);font-size:14.5px;line-height:1.5;max-height:140px;background:none;color:var(--ink)}
+  textarea::placeholder{color:var(--ink-faint)}
+  .send{width:46px;height:46px;flex:none;border:none;border-radius:13px;cursor:pointer;background:linear-gradient(150deg,var(--amber),var(--amber-deep));display:grid;place-items:center;transition:.18s;position:relative;overflow:hidden;box-shadow:0 6px 16px rgba(245,181,68,.25)}
+  .send:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(245,181,68,.4)}
+  .send:active{transform:scale(.92)}
+  .send:disabled{background:#2a3a33;cursor:not-allowed;transform:none;box-shadow:none}
+  .send svg{width:18px;height:18px;stroke:#1a1206;stroke-width:2.4;fill:none}
+  .send .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.5);transform:scale(0);animation:rip .5s ease-out}
+  @keyframes rip{to{transform:scale(3);opacity:0}}
+  .hint{font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);letter-spacing:.06em;margin-top:9px;text-align:right}
+
+  .messages::-webkit-scrollbar,.sidebar::-webkit-scrollbar{width:9px}
+  .messages::-webkit-scrollbar-thumb{background:#1c2e27;border-radius:99px}
+  .sidebar::-webkit-scrollbar-thumb{background:#13241d;border-radius:99px}
   :focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+  textarea:focus,textarea:focus-visible{outline:none;caret-color:var(--mint)}
 
   @media(max-width:940px){
     .app{grid-template-columns:1fr}
     .sidebar{display:none}
-    .mini-progress{display:flex}
-    .chat-top,.messages,.composer{padding-left:18px;padding-right:18px}
+    .chat-top,.messages,.composer{padding-left:16px;padding-right:16px}
+    .mode-hint{display:none}
+    .ring{width:42px;height:42px}
+    .tobottom{right:18px}
   }
-  @media(prefers-reduced-motion:reduce){
-    *,*::before,*::after{animation:none!important;transition:none!important}
-  }
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.panel{opacity:1!important;transform:none!important}}
 </style>
 </head>
 <body>
 
-<svg class="curve" viewBox="0 0 1440 800" preserveAspectRatio="none" aria-hidden="true">
-  <path class="c1" d="M0,640 C220,620 320,480 520,440 C720,400 830,300 1010,260 C1190,220 1310,150 1440,120"/>
-  <path class="c2" d="M0,700 C260,690 380,560 560,520 C760,470 900,380 1080,330 C1240,290 1350,230 1440,210"/>
-</svg>
+<div class="ambient" aria-hidden="true">
+  <canvas id="stars"></canvas>
+  <div class="glow glow-mint"></div>
+  <div class="glow glow-amber"></div>
+  <div class="dots"></div>
+  <div class="grain"></div>
+  <div class="vignette"></div>
+</div>
 
 <div class="app">
 
   <!-- ============ SIDEBAR ============ -->
   <aside class="sidebar">
     <div class="brand">
-      <svg class="logo" viewBox="0 0 40 40" aria-hidden="true">
-        <path d="M8 28 L20 10 L32 28 M8 28 L32 28"/>
-        <circle cx="8" cy="28" r="4"/>
-        <circle class="pulse" cx="20" cy="10" r="4"/>
-        <circle cx="32" cy="28" r="4"/>
+      <svg class="logo" viewBox="0 0 46 46" aria-hidden="true">
+        <circle class="orbit" cx="23" cy="23" r="19" fill="none" stroke="rgba(79,224,192,.25)" stroke-width="1" stroke-dasharray="3 6"/>
+        <path class="draw" d="M9 33 L23 11 L37 33 M9 33 L37 33"/>
+        <circle class="nd" cx="9" cy="33" r="3.4"/>
+        <circle class="pulse" cx="23" cy="9" r="3.4"/>
+        <circle class="nd" cx="37" cy="33" r="3.4"/>
       </svg>
       <div>
         <h2>ML Mentor</h2>
@@ -211,76 +255,86 @@
       </div>
     </div>
 
-    <div class="panel">
-      <div class="panel-label">Session status</div>
+    <div class="panel p1">
+      <div class="plabel">Session pulse</div>
       <div class="status-row">
         <span class="dot" id="sideDot"></span>
         <span id="sideStatus">Demo brain · offline</span>
-        <span class="streak" id="streakBadge">1 day</span>
+        <span class="streak" id="streakBadge">⚡ 1 day</span>
       </div>
-      <svg class="spark" viewBox="0 0 120 32" aria-hidden="true">
-        <polyline points="0,26 14,24 28,25 42,18 56,20 70,12 84,14 98,7 112,9 120,6"/>
-      </svg>
+      <svg class="spark" id="spark" viewBox="0 0 120 38" preserveAspectRatio="none" aria-hidden="true"><polyline id="sparkPoly" points=""/></svg>
+      <div class="spark-cap">session activity · live</div>
     </div>
 
-    <div class="panel">
-      <div class="road-head">
-        <div class="panel-label" style="margin:0">Roadmap</div>
-        <div class="road-pct"><span id="roadCount">0/7</span></div>
+    <div class="panel p2">
+      <div class="jhead">
+        <div class="plabel" style="margin:0">Learning journey</div>
+        <div class="jcount" id="roadCount">0<span>/7</span></div>
       </div>
-      <div class="bar"><div class="bar-fill" id="barFill"></div></div>
+      <div class="jsub" id="jsub">modules cleared</div>
       <div id="topicList"></div>
     </div>
 
-    <div class="panel">
-      <div class="panel-label">Learner profile</div>
-      <div class="chips-profile">
-        <span class="pchip">level: beginner</span>
-        <span class="pchip">python: basic</span>
-        <span class="pchip">goal: job</span>
+    <div class="panel p3">
+      <div class="plabel">Learner profile</div>
+      <div class="chips-p">
+        <span class="pchip">beginner</span>
+        <span class="pchip">python · basic</span>
+        <span class="pchip">goal · job</span>
         <span class="pchip">1h / day</span>
       </div>
     </div>
 
-    <div class="side-foot">v1.0 · fastapi + llm · keep learning</div>
+    <div class="side-foot">v2.0 · fastapi + llm<br>the path is the point — keep going.</div>
   </aside>
 
   <!-- ============ CHAT ============ -->
   <main class="chat">
     <header class="chat-top">
       <div>
-        <h1>Study Session</h1>
-        <div class="sub">python · data · ml · mlops</div>
+        <div class="ct-title">Study Session</div>
+        <div class="ct-sub">python · data · ml · mlops</div>
       </div>
-      <div class="mini-progress">
-        <div class="mini-bar"><div class="mini-fill" id="miniFill"></div></div>
-        <span id="miniCount">0/7</span>
-      </div>
-      <div class="mode-badge">
-        <span class="dot" id="modeDot"></span>
-        <span id="modeText">DEMO · start backend for live AI</span>
+      <div class="ct-right">
+        <div class="mode" id="mode">
+          <span class="dot" id="modeDot"></span>
+          <span class="mode-state" id="modeState">DEMO</span>
+          <span class="mode-hint">· start backend for live AI</span>
+        </div>
+        <div class="ring" title="Roadmap progress">
+          <svg width="48" height="48" viewBox="0 0 48 48">
+            <circle class="track" cx="24" cy="24" r="20"/>
+            <circle class="prog" id="ringProg" cx="24" cy="24" r="20"/>
+          </svg>
+          <div class="ring-num" id="ringNum">0%</div>
+        </div>
       </div>
     </header>
 
     <div class="messages" id="messages">
       <div class="msg-wrap" id="msgWrap"></div>
     </div>
+    <button class="tobottom" id="toBottom" aria-label="Scroll to latest"><svg viewBox="0 0 24 24"><path d="M6 9 L12 15 L18 9"/></svg></button>
 
     <div class="composer">
       <div class="composer-inner">
+        <div class="offline" id="offline">
+          <svg viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+          <span><b>Offline demo mode.</b> Real answers need the backend — align your <code>.env</code> (key + URL + model) and run <code>python run.py</code>.</span>
+          <button class="x" id="offlineX" aria-label="Dismiss">×</button>
+        </div>
+        <div class="now-line" id="nowLine"><span class="ndot"></span><span>ready when you are — pick a chip or just type</span></div>
         <div class="quick" id="quick">
-          <button class="chip">Create my roadmap</button>
-          <button class="chip">Teach me Python basics</button>
-          <button class="chip">Give me a quiz</button>
-          <button class="chip">Suggest a project</button>
-          <button class="chip">Review my code</button>
-          <button class="chip">Next topic</button>
+          <button class="chip"><svg viewBox="0 0 24 24"><path d="M9 20l-5.4-2.2a2 2 0 0 1-1.2-1.8V6a2 2 0 0 1 2.7-1.9L9 6m0 14 6-2m-6 2V6m6 12 5.4 2.2a2 2 0 0 0 2.7-1.9V8a2 2 0 0 0-1.2-1.8L15 4m0 14V4m0 0L9 6"/></svg>Create my roadmap</button>
+          <button class="chip"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15Z"/></svg>Teach me Python basics</button>
+          <button class="chip"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Give me a quiz</button>
+          <button class="chip"><svg viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5ZM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Suggest a project</button>
+          <button class="chip"><svg viewBox="0 0 24 24"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>Review my code</button>
+          <button class="chip"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Next topic</button>
         </div>
         <div class="inputbar">
-          <textarea id="input" rows="1" placeholder="Ask anything about AI/ML engineering..." aria-label="Message"></textarea>
-          <button class="send" id="sendBtn" aria-label="Send">
-            <svg viewBox="0 0 24 24"><path d="M4 12 L20 4 L14 20 L11 13 Z"/></svg>
-          </button>
+          <textarea id="input" rows="1" placeholder="Ask anything about AI/ML engineering…" aria-label="Message"></textarea>
+          <button class="send" id="sendBtn" aria-label="Send"><svg viewBox="0 0 24 24"><path d="M4 12 L20 4 L14 20 L11 13 Z"/></svg></button>
         </div>
         <div class="hint">enter to send · shift+enter for new line</div>
       </div>
@@ -289,10 +343,8 @@
 </div>
 
 <script>
-const CONFIG = {
-  API_URL: "http://127.0.0.1:8000",
-  USER_ID: "default"
-};
+/* ================= CONFIG ================= */
+const CONFIG = { API_URL: "http://127.0.0.1:8000", USER_ID: "default" };
 
 const TOPICS = [
   { id:"python",    label:"Python basics" },
@@ -304,322 +356,407 @@ const TOPICS = [
   { id:"portfolio", label:"Projects & portfolio" },
 ];
 
-let state = {
-  messages: [],
-  completed: [],
-  current: null,
-  busy: false,
-  live: false,
-};
+let state = { messages:[], completed:[], current:null, busy:false, live:false, offlineShown:false };
 
 const $ = id => document.getElementById(id);
-const wrap = $("msgWrap");
-const box  = $("messages");
-const input = $("input");
+const wrap = $("msgWrap"), box = $("messages"), input = $("input");
 
-function renderSidebar(){
-  const list = $("topicList");
-  list.innerHTML = "";
+/* ================= constellation canvas ================= */
+(function(){
+  const cv = $("stars"), ctx = cv.getContext("2d");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W,H,dpr,nodes=[];
+  function size(){
+    dpr = Math.min(window.devicePixelRatio||1, 2);
+    W = cv.clientWidth; H = cv.clientHeight;
+    cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    const n = Math.round(Math.min(70, (W*H)/26000));
+    nodes = Array.from({length:n}, ()=>({
+      x:Math.random()*W, y:Math.random()*H,
+      vx:(Math.random()-.5)*.18, vy:(Math.random()-.5)*.18,
+      r:Math.random()*1.3+.5, ph:Math.random()*6.28,
+      amber: Math.random()<.16
+    }));
+  }
+  function frame(t){
+    ctx.clearRect(0,0,W,H);
+    for(const a of nodes){
+      a.x+=a.vx; a.y+=a.vy;
+      if(a.x<0)a.x+=W; if(a.x>W)a.x-=W; if(a.y<0)a.y+=H; if(a.y>H)a.y-=H;
+      const tw = .35+.45*(.5+.5*Math.sin(t/900+a.ph));
+      ctx.beginPath(); ctx.arc(a.x,a.y,a.r,0,6.28);
+      ctx.fillStyle = a.amber ? `rgba(245,181,68,${tw})` : `rgba(79,224,192,${tw})`;
+      ctx.fill();
+    }
+    for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){
+      const a=nodes[i], b=nodes[j], dx=a.x-b.x, dy=a.y-b.y, d=dx*dx+dy*dy;
+      if(d<13000){ const o=(1-d/13000)*.10;
+        ctx.strokeStyle=`rgba(120,210,185,${o})`; ctx.lineWidth=.6;
+        ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+      }
+    }
+    if(!reduce) requestAnimationFrame(frame);
+  }
+  size(); window.addEventListener("resize", size);
+  if(reduce){ ctx.clearRect(0,0,W,H); frame(0); } else requestAnimationFrame(frame);
+})();
+
+/* ================= sidebar / journey / ring / spark ================= */
+const RING_C = 2*Math.PI*20;
+$("ringProg").style.strokeDasharray = RING_C;
+$("ringProg").style.strokeDashoffset = RING_C;
+
+let activity = Array.from({length:16},(_,i)=> 7 + 4*Math.sin(i/2.1) + (i%3));
+function drawSpark(flash){
+  const max=22, n=activity.length;
+  const pts = activity.map((v,i)=>`${(i/(n-1)*120).toFixed(1)},${(35 - Math.min(v,max)/max*30).toFixed(1)}`).join(" ");
+  const poly = $("sparkPoly"); poly.setAttribute("points", pts);
+  if(flash){ poly.classList.remove("flash"); void poly.offsetWidth; poly.classList.add("flash"); }
+}
+function bumpActivity(){ activity.push(13+Math.random()*7); if(activity.length>16) activity.shift(); drawSpark(true); }
+
+function render(){
+  const list = $("topicList"); list.innerHTML = "";
   TOPICS.forEach((t,i)=>{
-    const done = state.completed.includes(t.id);
-    const cur  = state.current === t.id;
+    const done = state.completed.includes(t.id), cur = state.current===t.id;
+    const meta = done ? "completed" : cur ? "in progress" : "locked in";
     const div = document.createElement("div");
-    div.className = "topic " + (done ? "done" : cur ? "current" : "todo");
+    div.className = "topic " + (done?"done":cur?"current":"todo");
     div.innerHTML =
-      `<span class="num">0${i+1}</span><span class="lbl">${t.label}</span>` +
-      `<span class="st">${done ? "\u2713" : cur ? "\u25CF" : "\u00B7"}</span>`;
+      `<div class="rail"><div class="node"><svg viewBox="0 0 12 12"><path d="M2 6 L5 9 L10 3"/></svg></div><div class="conn"></div></div>`+
+      `<div><div class="t-label">${t.label}</div><div class="t-meta">${meta}</div></div>`;
     list.appendChild(div);
   });
-  const pct = Math.round(state.completed.length / TOPICS.length * 100);
-  $("barFill").style.width = pct + "%";
-  $("miniFill").style.width = pct + "%";
-  $("roadCount").textContent = state.completed.length + "/" + TOPICS.length;
-  $("miniCount").textContent = state.completed.length + "/" + TOPICS.length;
+  const pct = Math.round(state.completed.length/TOPICS.length*100);
+  $("ringProg").style.strokeDashoffset = RING_C*(1-pct/100);
+  $("ringNum").textContent = pct+"%";
+  $("roadCount").innerHTML = state.completed.length+"<span>/"+TOPICS.length+"</span>";
+  $("jsub").textContent = state.completed.length ? "modules cleared" : "modules cleared";
+  const cur = TOPICS.find(t=>t.id===state.current);
+  $("nowLine").innerHTML = cur
+    ? `<span class="ndot"></span><span>now studying · <b>${cur.label}</b></span>`
+    : `<span class="ndot"></span><span>ready when you are — pick a chip or just type</span>`;
 }
 
 function setMode(live){
   state.live = live;
   $("modeDot").classList.toggle("live", live);
   $("sideDot").classList.toggle("live", live);
-  $("modeText").textContent = live ? "LIVE \u00B7 connected to FastAPI" : "DEMO \u00B7 start backend for live AI";
-  $("sideStatus").textContent = live ? "Live agent \u00B7 connected" : "Demo brain \u00B7 offline";
+  $("mode").classList.toggle("live", live);
+  $("modeState").textContent = live ? "LIVE" : "DEMO";
+  $("sideStatus").textContent = live ? "Live agent · connected" : "Demo brain · offline";
+  if(live) $("offline").classList.remove("show");
+  else if(!state.offlineShown){ $("offline").classList.add("show"); state.offlineShown = true; }
 }
+$("offlineX").addEventListener("click", ()=>$("offline").classList.remove("show"));
 
+/* streak */
 (function(){
   const today = new Date().toDateString();
-  let s = JSON.parse(localStorage.getItem("mlmentor_streak") || "{}");
-  if (s.day !== today){
-    const yest = new Date(Date.now()-864e5).toDateString();
-    s.count = (s.day === yest) ? (s.count||0)+1 : 1;
-    s.day = today;
-    localStorage.setItem("mlmentor_streak", JSON.stringify(s));
-  }
-  $("streakBadge").textContent = s.count + " day" + (s.count>1?"s":"");
+  let s = JSON.parse(localStorage.getItem("mlmentor_streak")||"{}");
+  if(s.day!==today){ const y=new Date(Date.now()-864e5).toDateString(); s.count=(s.day===y)?(s.count||0)+1:1; s.day=today; localStorage.setItem("mlmentor_streak",JSON.stringify(s)); }
+  $("streakBadge").textContent = "⚡ "+s.count+" day"+(s.count>1?"s":"");
 })();
 
+/* ================= markdown + syntax highlight ================= */
 function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+const HL = /(#[^\n]*)|("""[\s\S]*?"""|'''[\s\S]*?'''|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|\b(def|return|if|elif|else|for|while|in|not|and|or|import|from|as|class|try|except|finally|with|lambda|yield|pass|break|continue|True|False|None|print|self|async|await|global|raise|del|assert)\b|\b(\d+(?:\.\d+)?)\b/g;
+function hlPy(lang, e){
+  if(!/^(python|py|python3)$/i.test(lang||"")) return e;
+  HL.lastIndex = 0;
+  return e.replace(HL,(m,com,str,key,num)=>
+    com?`<span class="tok-com">${com}</span>`:str?`<span class="tok-str">${str}</span>`:key?`<span class="tok-key">${key}</span>`:num?`<span class="tok-num">${num}</span>`:m);
+}
+let cbStore=[], inlStore=[];
+function codeBlock(lang, code){
+  const hl = hlPy(lang, code), lines = code.split("\n");
+  const gutter = lines.map((_,i)=>`<span>${i+1}</span>`).join("");
+  return `<div class="codeblock"><div class="cb-bar"><span class="cb-dots"><i></i><i></i><i></i></span><span class="cb-lang">${lang||"code"}</span><button class="cb-copy" type="button">copy</button></div><div class="cb-body"><div class="cb-gutter">${gutter}</div><pre><code>${hl}</code></pre></div></div>`;
+}
 function formatMD(src){
+  cbStore=[]; inlStore=[];
   let s = esc(src);
-  s = s.replace(/```(\w*)\n([\s\S]*?)```/g, (m,lang,code)=>
-    `<div class="codeblock"><div class="codehead"><span>${lang||"code"}</span>` +
-    `<button class="copybtn" onclick="copyCode(this)">copy</button></div>` +
-    `<pre><code>${code.replace(/\n$/,"")}</code></pre></div>`);
-  s = s.replace(/`([^`\n]+)`/g, '<code class="inline">$1</code>');
-  s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  s = s.replace(/^### (.*)$/gm, "<h4>$1</h4>");
-  s = s.replace(/(?:^|\n)((?:- .*(?:\n|$))+)/g, (m,b)=>
-    "\n<ul>" + b.trim().split("\n").map(l=>`<li>${l.replace(/^- /,"")}</li>`).join("") + "</ul>");
-  s = s.replace(/(?:^|\n)((?:\d+\. .*(?:\n|$))+)/g, (m,b)=>
-    "\n<ol>" + b.trim().split("\n").map(l=>`<li>${l.replace(/^\d+\. /,"")}</li>`).join("") + "</ol>");
-  return s.split(/\n{2,}/).map(p=>{
-    if (/^\s*<(ul|ol|div|h4)/.test(p.trim())) return p;
-    return `<p>${p.replace(/\n/g,"<br>")}</p>`;
-  }).join("");
-}
-function copyCode(btn){
-  const code = btn.closest(".codeblock").querySelector("code").innerText;
-  navigator.clipboard.writeText(code).then(()=>{
-    btn.textContent = "copied \u2713";
-    setTimeout(()=>btn.textContent = "copy", 1400);
-  });
+  s = s.replace(/```(\w*)\n([\s\S]*?)```/g,(m,lang,code)=>{ const ph=`@@CB${cbStore.length}@@`; cbStore.push(codeBlock(lang,code.replace(/\n$/,""))); return "\n"+ph+"\n"; });
+  s = s.replace(/`([^`\n]+)`/g,(m,code)=>{ const ph=`@@IN${inlStore.length}@@`; inlStore.push(`<code class="inline">${code}</code>`); return ph; });
+  s = s.replace(/(^|\n)#{1,3} ([^\n]+)/g,'$1<h3 class="md-h">$2</h3>');
+  s = s.replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>");
+  s = s.replace(/(^|\n)((?:- [^\n]+(?:\n|$))+)/g,(m,pre,b)=> pre+'<ul class="md-ul">'+b.trim().split("\n").map(l=>"<li>"+l.replace(/^- /,"")+"</li>").join("")+"</ul>");
+  s = s.replace(/(^|\n)((?:\d+\. [^\n]+(?:\n|$))+)/g,(m,pre,b)=> pre+'<ol class="md-ol">'+b.trim().split("\n").map(l=>"<li>"+l.replace(/^\d+\. /,"")+"</li>").join("")+"</ol>");
+  s = s.split(/\n{2,}/).map(bl=>{ const t=bl.trim(); if(!t) return ""; if(/^<(h3|ul|ol)|^@@CB/.test(t)) return t; return "<p>"+t.replace(/\n/g,"<br>")+"</p>"; }).join("");
+  s = s.replace(/@@IN(\d+)@@/g,(m,i)=>inlStore[+i]);
+  s = s.replace(/@@CB(\d+)@@/g,(m,i)=>cbStore[+i]);
+  return s;
 }
 
+/* ================= messages ================= */
 function scrollBottom(){ box.scrollTop = box.scrollHeight; }
-
+const AV = `<svg viewBox="0 0 40 40"><path class="ln" d="M8 28 L20 10 L32 28"/><circle class="nd" cx="8" cy="28" r="3.4"/><circle class="nd" cx="20" cy="10" r="3.4"/><circle class="nd" cx="32" cy="28" r="3.4"/></svg>`;
 function addMessage(role, content, empty=false){
   const div = document.createElement("div");
-  div.className = "msg " + role;
-  if (role === "agent"){
-    div.innerHTML =
-      `<div class="avatar"><svg viewBox="0 0 40 40"><path d="M8 28 L20 10 L32 28"/><circle cx="8" cy="28" r="4"/><circle cx="20" cy="10" r="4"/><circle cx="32" cy="28" r="4"/></svg></div>` +
-      `<div class="bubble"><div class="bubble-content"></div></div>`;
+  div.className = "msg "+role;
+  if(role==="agent"){
+    div.innerHTML = `<div class="avatar">${AV}</div><div class="bubble"><div class="msg-actions"><button class="msg-copy" type="button">copy</button></div><div class="bubble-content"></div></div>`;
   } else {
     div.innerHTML = `<div class="bubble"><div class="bubble-content"></div></div>`;
   }
   wrap.appendChild(div);
   const c = div.querySelector(".bubble-content");
-  if (!empty) c.innerHTML = role === "user" ? esc(content).replace(/\n/g,"<br>") : formatMD(content);
-  scrollBottom();
-  return div;
+  if(!empty) c.innerHTML = role==="user" ? esc(content).replace(/\n/g,"<br>") : formatMD(content);
+  scrollBottom(); return div;
 }
-
 function showTyping(){
   const div = document.createElement("div");
   div.className = "msg agent typing";
-  div.innerHTML =
-    `<div class="avatar"><svg viewBox="0 0 40 40"><path d="M8 28 L20 10 L32 28"/><circle cx="8" cy="28" r="4"/><circle cx="20" cy="10" r="4"/><circle cx="32" cy="28" r="4"/></svg></div>` +
-    `<div class="bubble"><span class="d"></span><span class="d"></span><span class="d"></span></div>`;
-  wrap.appendChild(div);
-  scrollBottom();
-  return div;
+  div.innerHTML = `<div class="avatar">${AV}</div><div class="bubble"><span class="d"></span><span class="d"></span><span class="d"></span></div>`;
+  wrap.appendChild(div); scrollBottom(); return div;
 }
-
 async function typeMessage(el, raw){
-  const words = raw.split(/(\s+)/);
-  let i = 0;
-  await new Promise(res=>{
-    (function tick(){
-      i = Math.min(words.length, i + 3);
-      el.textContent = words.slice(0,i).join("");
-      scrollBottom();
-      if (i < words.length) setTimeout(tick, 16);
-      else res();
-    })();
-  });
-  el.innerHTML = formatMD(raw);
-  scrollBottom();
+  const words = raw.split(/(\s+)/); let i=0;
+  await new Promise(res=>{ (function tick(){ i=Math.min(words.length,i+3); el.textContent=words.slice(0,i).join(""); scrollBottom(); if(i<words.length) setTimeout(tick,15); else res(); })(); });
+  el.innerHTML = formatMD(raw); scrollBottom();
 }
 
+/* ================= demo brain (richer, non-repetitive) ================= */
 const DEMO = {
-greeting: `Hello \u2014 I am your **AI/ML Mentor**. I will teach you AI and ML engineering step by step: lessons, exercises, projects, and interview prep.\n\nFirst, tell me your current level: **Beginner**, **Intermediate**, or **Advanced**?\n\nOr tap a quick action below to jump straight in.`,
+greeting: `Hello — I am your **AI/ML Mentor**. I will teach you AI and ML engineering step by step: lessons, exercises, projects, and interview prep.
 
-hi: `Hey! Welcome back. Ready to learn something new today?\n\nTell me where you are at \u2014 **beginner**, **intermediate**, or **advanced** \u2014 and I will guide you from there.\n\nOr just ask me anything about AI/ML.`,
+First, tell me your current level: **Beginner**, **Intermediate**, or **Advanced**?
 
-whatIsML: `### What is Machine Learning?\n\n**Machine Learning (ML)** is a branch of AI where computers learn patterns from data instead of being explicitly programmed.\n\n**Simple analogy:** Instead of writing rules like "if email has 'free money' mark as spam," you show the computer 10,000 emails and it **learns** what spam looks like.\n\n### Three main types:\n\n1. **Supervised learning** \u2014 You give the model labeled data (inputs + correct answers) and it learns the pattern.\n   - Example: predict house prices from size and location\n\n2. **Unsupervised learning** \u2014 You give data without labels and the model finds hidden groups.\n   - Example: group customers by buying behavior\n\n3. **Reinforcement learning** \u2014 The model learns by trial and error, getting rewards for good actions.\n   - Example: a game AI learning to win\n\n### Where ML is used daily:\n- Netflix recommendations\n- Gmail spam filter\n- Voice assistants (Siri, Alexa)\n- Self-driving cars\n- Medical diagnosis\n\nWant to go deeper? Ask me about **supervised learning**, **Python basics for ML**, or say **create my roadmap** to start learning step by step.`,
+Or tap a quick action below to jump straight in.`,
 
-whatIsDL: `### What is Deep Learning?\n\n**Deep Learning** is a subset of Machine Learning that uses **neural networks** with many layers to learn complex patterns.\n\n**Think of it this way:**\n- ML = a student learning from a textbook\n- Deep Learning = a student who reads the textbook, watches videos, does practice problems, and discusses with peers\n\n### How it works (simplified):\n\n1. Data goes into the **input layer**\n2. It passes through **hidden layers** (this is the "deep" part \u2014 many layers)\n3. Each layer extracts features: edges \u2192 shapes \u2192 objects \u2192 meaning\n4. Output layer gives the prediction\n\n### Key difference from traditional ML:\n\n| Traditional ML | Deep Learning |\n|---|---|\n| Needs feature engineering | Learns features automatically |\n| Works with small data | Needs large datasets |\n| Runs on CPU | Needs GPU for training |\n\n### Real-world examples:\n- **ChatGPT** (transformers)\n- **Face ID** on your phone\n- **Google Translate**\n- **Medical image analysis**\n\n### Main architectures:\n- **CNN** \u2014 image recognition\n- **RNN / LSTM** \u2014 text and sequences\n- **Transformers** \u2014 LLMs like GPT, Llama\n\nWant to start learning? Say **Python basics** to begin, or **create my roadmap** for a full study plan.`,
+roadmap: `Here is your **8-week AI/ML roadmap**:
 
-python: `### Python basics \u00B7 variables\n\nA **variable** is a name that points to a value stored in memory.\n\nReal-life example: a labeled box. The label is the name, the content is the value.\n\n\`\`\`python\nname = "Ali"\nage = 24\nlearning = "machine learning"\n\nprint(name, "is learning", learning)\n\`\`\`\n\nKey terms:\n- **assignment** \u2013 storing a value with \`=\`\n- **type** \u2013 what kind of value it is (\`str\`, \`int\`, \`float\`)\n- **reassignment** \u2013 changing what a name points to\n\nCommon mistake: using \`==\` (comparison) when you mean \`=\` (assignment).\n\n**Quick check:** after \`x = 5\` then \`x = x + 2\`, what is \`x\`?`,
+### Weeks 1–2 · Python for data
+- Variables, functions, loops
+- Lists, dictionaries, comprehensions
+- NumPy arrays and vectorization
 
-pythonTypes: `### Python basics \u00B7 data types\n\nEvery value in Python has a **type**. Here are the main ones:\n\n\`\`\`python\n# Strings \u2014 text\nname = "Ali"\n\n# Integers \u2014 whole numbers\nage = 24\n\n# Floats \u2014 decimal numbers\nheight = 5.9\n\n# Booleans \u2014 True or False\nis_student = True\n\n# Lists \u2014 ordered collection\nskills = ["Python", "NumPy", "Pandas"]\n\n# Dictionaries \u2014 key-value pairs\nprofile = {"name": "Ali", "level": "beginner"}\n\`\`\`\n\n**Check yourself:** what is the type of \`3.14\`? Type your answer!`,
+### Weeks 3–4 · Data analysis
+- Pandas DataFrames
+- Data cleaning and missing values
+- Exploratory data analysis
 
-numpy: `### NumPy basics \u00B7 arrays\n\n**NumPy** is the foundation of data science in Python. It gives you fast, vectorized operations on arrays.\n\n\`\`\`python\nimport numpy as np\n\n# Create arrays\narr = np.array([1, 2, 3, 4, 5])\n\n# Operations are element-wise (no loops needed!)\nprint(arr * 2)        # [2, 4, 6, 8, 10]\nprint(arr + 10)       # [11, 12, 13, 14, 15]\nprint(arr.mean())     # 3.0\n\`\`\`\n\n**Why NumPy matters for ML:**\n- 100x faster than Python lists for math\n- Required by Pandas, scikit-learn, TensorFlow\n- Linear algebra operations built in\n\n**Key functions:**\n- \`np.array()\` \u2014 create array\n- \`np.zeros()\` / \`np.ones()\` \u2014 fill arrays\n- \`np.random\` \u2014 random numbers\n- \`arr.reshape()\` \u2014 change shape\n\nWant to practice? Try creating a NumPy array with numbers 0\u20139.`,
+### Weeks 5–6 · Machine learning
+- Train/test split
+- Regression and classification
+- Evaluation metrics
 
-pandas: `### Pandas basics \u00B7 DataFrames\n\n**Pandas** is the #1 tool for data analysis in Python. Think of it as an Excel sheet you can code.\n\n\`\`\`python\nimport pandas as pd\n\n# Create a DataFrame\ndf = pd.DataFrame({\n    "name": ["Ali", "Sara", "Omar"],\n    "age": [24, 28, 22],\n    "score": [85, 92, 78]\n})\n\nprint(df.head())\nprint(df["age"].mean())  # 24.67\n\`\`\`\n\n**Core operations:**\n- \`df.head()\` \u2014 first 5 rows\n- \`df.describe()\` \u2014 summary stats\n- \`df["col"]\` \u2014 select column\n- \`df[df["age"] > 23]\` \u2014 filter rows\n- \`df.groupby("name").mean()\` \u2014 group and aggregate\n\n**Common task:** loading CSV files\n\`\`\`python\ndf = pd.read_csv("data.csv")\n\`\`\`\n\nWant to try? Ask me for a **Pandas exercise**!`,
+### Week 7 · Project
+- Build **house price prediction** end-to-end
 
-mlRegression: `### Machine Learning \u00B7 Regression\n\n**Regression** predicts a **continuous number** (like price, temperature, salary).\n\n### How it works:\n\n1. You have data: house sizes and their prices\n2. The model finds the best line through the data\n3. New house size \u2192 model predicts price\n\n\`\`\`python\nfrom sklearn.linear_model import LinearRegression\nimport numpy as np\n\n# Training data (size in sqft, price in thousands)\nX = np.array([[1000], [1500], [2000], [2500]])\ny = np.array([200, 280, 350, 420])\n\n# Train model\nmodel = LinearRegression()\nmodel.fit(X, y)\n\n# Predict\nprint(model.predict([[1800]]))  # ~316\n\`\`\`\n\n**Key terms:**\n- **Feature** \u2014 input variable (size)\n- **Label** \u2014 what you predict (price)\n- **Training** \u2014 fitting the line to data\n- **Prediction** \u2014 using the line on new data\n\n**Common regression algorithms:**\n- Linear Regression\n- Ridge / Lasso\n- Decision Tree Regressor\n- Random Forest Regressor\n\nWant to try building one? Say **suggest a project**!`,
+### Week 8 · Deploy
+- Wrap the model in a FastAPI endpoint
+- Add it to your portfolio
 
-mlClassification: `### Machine Learning \u00B7 Classification\n\n**Classification** predicts a **category** (spam/Not spam, cat/dog, pass/fail).\n\n### How it works:\n\n1. You have labeled data (emails marked as spam or not)\n2. The model learns what features separate the classes\n3. New email \u2192 model predicts spam or not\n\n\`\`\`python\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score\n\n# Split data\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)\n\n# Train\nmodel = RandomForestClassifier()\nmodel.fit(X_train, y_train)\n\n# Evaluate\npreds = model.predict(X_test)\nprint(accuracy_score(y_test, preds))\n\`\`\`\n\n**Key metrics:**\n- **Accuracy** \u2014 % correct overall\n- **Precision** \u2014 of predicted positives, how many are correct?\n- **Recall** \u2014 of actual positives, how many did we catch?\n- **F1-score** \u2014 balance of precision and recall\n\n**Real examples:**\n- Email spam detection\n- Disease diagnosis\n- Sentiment analysis\n- Image recognition\n\nWant a **quiz** on classification?`,
+Shall we start with **Python basics** today?`,
 
-roadmap: `Here is your **8-week AI/ML roadmap**:\n\n### Weeks 1\u20132 \u00B7 Python for data\n- Variables, functions, loops\n- Lists, dictionaries, comprehensions\n- NumPy arrays and vectorization\n\n### Weeks 3\u20134 \u00B7 Data analysis\n- Pandas DataFrames\n- Data cleaning and missing values\n- Exploratory data analysis\n\n### Weeks 5\u20136 \u00B7 Machine learning\n- Train/test split\n- Regression and classification\n- Evaluation metrics\n\n### Week 7 \u00B7 Project\n- Build **house price prediction** end-to-end\n\n### Week 8 \u00B7 Deploy\n- Wrap the model in a FastAPI endpoint\n- Add it to your portfolio\n\nShall we start with **Python basics** today?`,
+python: `### Python basics · variables
 
-quiz: `### Quick quiz \u00B7 ML fundamentals\n\nAnswer these and I will score them:\n\n1. What is the difference between **supervised** and **unsupervised** learning?\n2. True or false: a model that is great on training data but bad on new data is *underfitting*.\n3. For a spam filter, which matters more \u2014 precision or recall? Why?\n\nTake your time. One answer at a time is fine.`,
+A **variable** is a name that points to a value stored in memory — like a labeled box.
 
-project: `Based on your level, here are **3 projects** that build real skills:\n\n### 1. House price prediction (beginner)\n- Skills: Pandas, scikit-learn, regression\n- Outcome: predict prices from size, location, age\n\n### 2. Spam message classifier (beginner+)\n- Skills: text features, classification, evaluation\n- Outcome: a model that flags spam\n\n### 3. AI study agent (intermediate)\n- Skills: FastAPI, LLM APIs, prompt design\n- Outcome: the very app you are talking to right now\n\nWhich one should we plan step by step?`,
+\`\`\`python
+name = "Ali"
+age = 24
+learning = "machine learning"
 
-review: `Happy to review your code. Paste it here and tell me:\n\n1. What it should do\n2. What it actually does\n\nHere is the checklist I will use:\n- correctness and edge cases\n- readability and naming\n- vectorization (no slow loops where NumPy/Pandas can help)\n- data leaks between train and test\n\nPaste whenever you are ready.`,
+print(name, "is learning", learning)
+\`\`\`
 
-sklearn: `### scikit-learn \u00B7 ML in Python\n\n**scikit-learn** (sklearn) is the most popular ML library in Python.\n\n### The ML workflow:\n\n\`\`\`python\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.linear_model import LinearRegression\nfrom sklearn.metrics import mean_squared_error\n\n# 1. Prepare data\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)\n\n# 2. Choose and train model\nmodel = LinearRegression()\nmodel.fit(X_train, y_train)\n\n# 3. Predict\npreds = model.predict(X_test)\n\n# 4. Evaluate\nprint(mean_squared_error(y_test, preds))\n\`\`\`\n\n**Common algorithms:**\n| Task | Algorithm |\n|---|---|\n| Regression | LinearRegression, Ridge, RandomForestRegressor |\n| Classification | LogisticRegression, SVM, RandomForestClassifier |\n| Clustering | KMeans, DBSCAN |\n\n**Key functions:**\n- \`train_test_split()\` \u2014 split data\n- \`model.fit()\` \u2014 train\n- \`model.predict()\` \u2014 make predictions\n- \`accuracy_score()\` \u2014 evaluate\n\nWant a hands-on exercise?`,
+Key terms:
+- **assignment** — storing a value with \`=\`
+- **type** — what kind of value (\`str\`, \`int\`, \`float\`)
+- **reassignment** — changing what a name points to
 
-onboard: `Good question. Before we go deeper, tell me:\n\n1. Your current level \u2014 **beginner**, **intermediate**, or **advanced**?\n2. How much Python do you know?\n3. Your goal \u2014 job, projects, or exams?\n\nOr try a quick action below and we will learn by doing.`
+Common mistake: using \`==\` (compare) when you mean \`=\` (assign).
+
+**Quick check:** after \`x = 5\` then \`x = x + 2\`, what is \`x\`?`,
+
+ml: `### What is Machine Learning?
+
+In plain words: **teaching a computer from examples** instead of writing every rule by hand.
+
+- **Normal code:** you write the rule — if score > 50, pass
+- **ML:** you show 1000 past students and the model *learns* the rule itself
+
+Two big families:
+1. **Supervised** — data has labels (spam / not spam)
+2. **Unsupervised** — no labels, find groups (customer segments)
+
+\`\`\`python
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression()
+model.fit(X_train, y_train)        # learns from examples
+print(model.score(X_test, y_test)) # checks on unseen data
+\`\`\`
+
+Quick check: is *predicting house prices from size* supervised or unsupervised?`,
+
+quiz: `### Quick quiz · ML fundamentals
+
+Answer these and I will score them:
+
+1. What is the difference between **supervised** and **unsupervised** learning?
+2. True or false: a model great on training data but bad on new data is *underfitting*.
+3. For a spam filter, which matters more — precision or recall? Why?
+
+Take your time. One answer at a time is fine.`,
+
+project: `Based on your level, here are **3 projects** that build real skills:
+
+### 1. House price prediction (beginner)
+- Skills: Pandas, scikit-learn, regression
+- Outcome: predict prices from size, location, age
+
+### 2. Spam message classifier (beginner+)
+- Skills: text features, classification, evaluation
+- Outcome: a model that flags spam
+
+### 3. AI study agent (intermediate)
+- Skills: FastAPI, LLM APIs, prompt design
+- Outcome: the very app you are talking to right now
+
+Which one should we plan step by step?`,
+
+review: `Happy to review your code. Paste it here and tell me:
+
+1. What it should do
+2. What it actually does
+
+Here is the checklist I will use:
+- correctness and edge cases
+- readability and naming
+- vectorization (no slow loops where NumPy/Pandas can help)
+- data leaks between train and test
+
+Paste whenever you are ready.`,
+
+onboard: `Good question. Before we go deeper, tell me:
+
+1. Your current level — **beginner**, **intermediate**, or **advanced**?
+2. How much Python do you know?
+3. Your goal — job, projects, or exams?
+
+Or try a quick action below and we will learn by doing.`
 };
+
+function safeEcho(s){ return s.replace(/[`*_#>\[\]]/g,"").replace(/\s+/g," ").trim().slice(0,70); }
 
 function demoReply(text){
   const t = text.toLowerCase();
-
-  if (/(next|done|yes|continue)/.test(t) && state.current){
+  if(/(next|done|^yes$|continue)/.test(t) && state.current){
     const doneLabel = TOPICS.find(x=>x.id===state.current)?.label || "that topic";
     state.completed.push(state.current);
     const next = TOPICS.find(x=>!state.completed.includes(x.id));
     state.current = next ? next.id : null;
-    renderSidebar();
-    return { reply: `Nice work \u2014 **${doneLabel}** is done. \u2713\n\nNext up: **${next ? next.label : "full revision"}**. Say the word and I will start the lesson.` };
+    render();
+    return { reply:`Nice work — **${doneLabel}** is done. ✓\n\nNext up: **${next?next.label:"full revision"}**. Say the word and I will start the lesson.` };
   }
-  if (t.includes("roadmap") || t.includes("plan")) return { reply: DEMO.roadmap, current:"python" };
-  if (t.includes("quiz")) return { reply: DEMO.quiz };
-  if (t.includes("project")) return { reply: DEMO.project };
-  if (t.includes("review") || /\bcode\b/.test(t)) return { reply: DEMO.review };
-  if (/what is ml|what is machine learning|explain ml|tell me about ml|define ml/.test(t)) return { reply: DEMO.whatIsML };
-  if (/what is deep learning|what is dl|explain deep learning|neural network/.test(t)) return { reply: DEMO.whatIsDL };
-  if (/numpy|np\./.test(t)) return { reply: DEMO.numpy, current:"pandas" };
-  if (/pandas|dataframe|data frame/.test(t)) return { reply: DEMO.pandas, current:"pandas" };
-  if (/regression|predict.*number|continuous/.test(t)) return { reply: DEMO.mlRegression, current:"ml" };
-  if (/classification|classify|categor|spam/.test(t)) return { reply: DEMO.mlClassification, current:"ml" };
-  if (/sklearn|scikit|scikit-learn/.test(t)) return { reply: DEMO.sklearn, current:"ml" };
-  if (/python/.test(t)) return { reply: DEMO.python, current:"python" };
-  if (/data type|variable/.test(t)) return { reply: DEMO.pythonTypes, current:"python" };
-  if (/hello|hi\b|hey|greet|morning|afternoon|evening/.test(t)) return { reply: DEMO.hi };
-  return { reply: DEMO.onboard };
+  if(/roadmap|plan|schedule/.test(t))        return { reply:DEMO.roadmap, current:"python" };
+  if(/quiz|test me|question/.test(t))         return { reply:DEMO.quiz };
+  if(/project|build|portfolio/.test(t))       return { reply:DEMO.project };
+  if(/review|check my|debug/.test(t))         return { reply:DEMO.review };
+  if(/\bml\b|machine learning|what is ml|learning/.test(t)) return { reply:DEMO.ml, current:"ml" };
+  if(/deep learning|neural|cnn|transformer/.test(t)) return { reply:"### Deep learning in one breath\n\nDeep learning = **machine learning with neural networks** that learn features automatically.\n\n- **CNN** — sees images (cats, X-rays)\n- **RNN / LSTM** — reads sequences (text, audio)\n- **Transformer** — the architecture behind modern LLMs\n\nWant the intuition behind a *neuron*, or should we jump to a tiny network in code?", current:"dl" };
+  if(/mlops|deploy|docker|api/.test(t))       return { reply:"### MLOps in plain words\n\nMLOps is **how you keep a model alive in production**, not just in a notebook.\n\n1. Train and **version** the model\n2. Serve it behind an **API** (FastAPI)\n3. **Monitor** for data drift\n4. **Retrain** on a schedule\n\nShall we wrap a model in a FastAPI endpoint together?", current:"mlops" };
+  if(/pandas|numpy|data|dataframe/.test(t))   return { reply:"### Pandas in 30 seconds\n\nA **DataFrame** is a table with rows and columns — think Excel, but programmable.\n\n\`\`\`python\nimport pandas as pd\ndf = pd.read_csv(\"students.csv\")\nprint(df[df[\"score\"] > 80].head())\n\`\`\`\n\nThe three moves you use 90% of the time: **filter**, **groupby**, **merge**.\n\nWant a hands-on cleaning exercise?", current:"pandas" };
+  if(/math|statistics|stats|probability/.test(t)) return { reply:"### The math you actually need\n\nYou do **not** need to be a mathematician. You need intuition for:\n\n- **Mean / median / std** — the shape of your data\n- **Probability** — what the model is really predicting\n- **Gradients** — how a model *learns* (follow the slope downhill)\n\nWant me to explain *standard deviation* with a real example?", current:"math" };
+  if(/python|lesson|teach|variable|function/.test(t)) return { reply:DEMO.python, current:"python" };
+  if(/hello|\bhi\b|\bhey\b|start/.test(t))    return { reply:DEMO.onboard };
+  // smart, non-repetitive default
+  const e = safeEcho(text) || "that";
+  return { reply:`I'm running on my **offline demo brain**, so I'll give real answers the instant your backend connects.\n\nOn **${e}** — nice thing to explore. Quickest wins right now:\n- tap **Create my roadmap** to map the journey\n- tap **Teach me Python basics** for a real lesson\n- or ask me **what is ML**, **explain overfitting**, **give me a quiz**\n\nWhich one first?` };
 }
 
+/* ================= send flow ================= */
 async function send(text){
-  text = text.trim();
-  if (!text || state.busy) return;
-  state.busy = true;
-  $("sendBtn").disabled = true;
+  text = text.trim(); if(!text || state.busy) return;
+  state.busy = true; $("sendBtn").disabled = true;
 
   addMessage("user", text);
   state.messages.push({ role:"user", content:text });
-  save();
+  bumpActivity(); save();
 
   const typing = showTyping();
-  let reply, progress = null, current = null;
+  let reply, progress=null, current=null;
 
-  let res;
-  try {
-    res = await fetch(`${CONFIG.API_URL}/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: CONFIG.USER_ID, message: text })
+  try{
+    const res = await fetch(`${CONFIG.API_URL}/chat`, {
+      method:"POST", headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ user_id:CONFIG.USER_ID, message:text })
     });
-  } catch (netErr) {
-    console.warn("Backend unreachable - using demo brain:", netErr);
-    setMode(false);
-    const d = demoReply(text);
-    reply = d.reply;
-    current = d.current || null;
-    typing.remove();
-    const note = addMessage("agent", "", true);
-    await typeMessage(
-      note.querySelector(".bubble-content"),
-      "Backend not reachable at `" + CONFIG.API_URL +
-      "`. Is `python run.py` running? Showing demo reply.\n\n" + d.reply
-    );
-    state.messages.push({ role: "agent", content: reply });
-    save();
-    state.busy = false; $("sendBtn").disabled = false; input.focus();
-    return;
-  }
-
-  if (res.ok) {
+    if(!res.ok) throw new Error("status "+res.status);
     const data = await res.json();
-    reply = data.reply;
-    progress = data.progress;
-    setMode(true);
-  } else {
-    const errText = await res.text();
-    console.error("Backend error", res.status, errText);
-    setMode(false);
-    reply =
-      "Your backend returned **HTTP " + res.status +
-      "**. Check the terminal where you ran `python run.py` for the error.\n\nCommon causes:\n" +
-      "- Wrong `LLM_API_KEY` in `.env`\n" +
-      "- Wrong `MODEL_NAME` in `.env`\n" +
-      "- Provider rate limit\n\n" +
-      "Showing demo reply for now.";
+    reply = data.reply; progress = data.progress; setMode(true);
+  }catch(e){
+    const d = demoReply(text); reply = d.reply; current = d.current||null; setMode(false);
   }
 
   typing.remove();
-
-  if (current && !state.completed.includes(current)){
-    state.current = current;
-    renderSidebar();
-  }
-  if (progress) applyProgress(progress);
+  if(current && !state.completed.includes(current)){ state.current = current; render(); }
+  if(progress) applyProgress(progress);
 
   const el = addMessage("agent", "", true);
   await typeMessage(el.querySelector(".bubble-content"), reply);
   state.messages.push({ role:"agent", content:reply });
-  save();
+  bumpActivity(); save();
 
-  state.busy = false;
-  $("sendBtn").disabled = false;
-  input.focus();
+  state.busy = false; $("sendBtn").disabled = false; input.focus();
 }
 
 function applyProgress(p){
-  if (Array.isArray(p.completed_topics) && p.completed_topics.length){
-    TOPICS.forEach(t=>{
-      const hit = p.completed_topics.some(c => c.toLowerCase().includes(t.id) || t.label.toLowerCase().includes(c.toLowerCase()));
-      if (hit && !state.completed.includes(t.id)) state.completed.push(t.id);
-    });
+  if(Array.isArray(p.completed_topics)) TOPICS.forEach(t=>{
+    const hit = p.completed_topics.some(c=>c.toLowerCase().includes(t.id)||t.label.toLowerCase().includes(c.toLowerCase()));
+    if(hit && !state.completed.includes(t.id)) state.completed.push(t.id);
+  });
+  if(p.next_topic){
+    const next = TOPICS.find(t=>p.next_topic.toLowerCase().includes(t.id)||t.label.toLowerCase().includes(p.next_topic.toLowerCase()));
+    if(next && !state.completed.includes(next.id)) state.current = next.id;
   }
-  if (p.next_topic){
-    const next = TOPICS.find(t => p.next_topic.toLowerCase().includes(t.id) || t.label.toLowerCase().includes(p.next_topic.toLowerCase()));
-    if (next && !state.completed.includes(next.id)) state.current = next.id;
-  }
-  renderSidebar();
+  render();
 }
 
-function save(){
-  localStorage.setItem("mlmentor_chat", JSON.stringify({
-    messages: state.messages.slice(-60),
-    completed: state.completed,
-    current: state.current
-  }));
-}
-function load(){
-  try{
-    const d = JSON.parse(localStorage.getItem("mlmentor_chat"));
-    if (d){ state.messages = d.messages || []; state.completed = d.completed || []; state.current = d.current || null; }
-  }catch(e){}
-}
+/* ================= persistence ================= */
+function save(){ localStorage.setItem("mlmentor_chat", JSON.stringify({ messages:state.messages.slice(-60), completed:state.completed, current:state.current })); }
+function load(){ try{ const d=JSON.parse(localStorage.getItem("mlmentor_chat")); if(d){ state.messages=d.messages||[]; state.completed=d.completed||[]; state.current=d.current||null; } }catch(e){} }
 
-$("sendBtn").addEventListener("click", ()=>{ send(input.value); input.value=""; input.style.height="auto"; });
-input.addEventListener("keydown", e=>{
-  if (e.key === "Enter" && !e.shiftKey){
-    e.preventDefault();
-    send(input.value);
-    input.value = "";
-    input.style.height = "auto";
-  }
+/* ================= events ================= */
+$("sendBtn").addEventListener("click", e=>{
+  const r=document.createElement("span"); r.className="ripple"; const b=e.currentTarget.getBoundingClientRect();
+  const sz=Math.max(b.width,b.height); r.style.width=r.style.height=sz+"px"; r.style.left=(e.clientX-b.left-sz/2)+"px"; r.style.top=(e.clientY-b.top-sz/2)+"px";
+  e.currentTarget.appendChild(r); setTimeout(()=>r.remove(),500);
+  send(input.value); input.value=""; input.style.height="auto";
 });
+input.addEventListener("keydown", e=>{ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); send(input.value); input.value=""; input.style.height="auto"; } });
 input.addEventListener("input", ()=>{ input.style.height="auto"; input.style.height=Math.min(input.scrollHeight,140)+"px"; });
-document.querySelectorAll(".chip").forEach(c => c.addEventListener("click", ()=> send(c.textContent)));
+document.querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>send(c.textContent.trim())));
 
-load();
-renderSidebar();
-if (state.messages.length){
-  state.messages.forEach(m => addMessage(m.role, m.content));
+document.addEventListener("click", e=>{
+  const cb = e.target.closest(".cb-copy");
+  if(cb){ const code=cb.closest(".codeblock").querySelector("code").textContent;
+    navigator.clipboard.writeText(code).then(()=>{ cb.textContent="copied ✓"; setTimeout(()=>cb.textContent="copy",1300); }); return; }
+  const mc = e.target.closest(".msg-copy");
+  if(mc){ const txt=mc.closest(".bubble").querySelector(".bubble-content").textContent;
+    navigator.clipboard.writeText(txt).then(()=>{ mc.textContent="copied ✓"; setTimeout(()=>mc.textContent="copy",1300); }); }
+});
+
+/* scroll-to-bottom */
+box.addEventListener("scroll", ()=>{
+  const atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 90;
+  $("toBottom").classList.toggle("show", !atBottom);
+});
+$("toBottom").addEventListener("click", scrollBottom);
+
+/* ================= boot ================= */
+load(); render(); drawSpark(false);
+if(state.messages.length){
+  state.messages.forEach(m=>addMessage(m.role, m.content));
 } else {
   const t = showTyping();
-  setTimeout(async ()=>{
-    t.remove();
+  setTimeout(async ()=>{ t.remove();
     const el = addMessage("agent", "", true);
     await typeMessage(el.querySelector(".bubble-content"), DEMO.greeting);
-    state.messages.push({ role:"agent", content: DEMO.greeting });
-    save();
-  }, 900);
+    state.messages.push({ role:"agent", content:DEMO.greeting }); save();
+  }, 850);
 }
 </script>
 </body>
