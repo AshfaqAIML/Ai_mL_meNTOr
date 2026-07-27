@@ -1,0 +1,12 @@
+{
+  "liveServer.settings.ignoreFiles": [
+    "**/*.py",
+    "**/*.pyc",
+    "**/__pycache__/**",
+    "**/.env",
+    "**/data/**",
+    "**/*.json",
+    "**/venv/**",
+    "**/.git/**"
+  ]
+}

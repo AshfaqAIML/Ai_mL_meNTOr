@@ -224,6 +224,21 @@
     .tobottom{right:18px}
   }
   @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.panel{opacity:1!important;transform:none!important}}
+
+  .reload-toast{
+    position:fixed;left:50%;top:18px;transform:translate(-50%,-150%);z-index:60;
+    display:flex;align-items:center;gap:11px;max-width:min(580px,92vw);
+    background:linear-gradient(180deg,#1a1206,#120c04);color:#f3cf8f;
+    border:1px solid rgba(245,181,68,.42);border-radius:13px;padding:11px 15px;
+    box-shadow:0 20px 46px rgba(0,0,0,.55);font-size:12.5px;line-height:1.5;
+    backdrop-filter:blur(8px);transition:transform .55s cubic-bezier(.2,.9,.2,1);
+  }
+  .reload-toast.show{transform:translate(-50%,0)}
+  .reload-toast .ico{width:24px;height:24px;flex:none;border-radius:8px;background:var(--amber-soft);display:grid;place-items:center}
+  .reload-toast .ico svg{width:13px;height:13px;stroke:var(--amber);stroke-width:2.2;fill:none}
+  .reload-toast b{color:var(--amber);font-weight:600}
+  .reload-toast code{font-family:var(--mono);font-size:11px;background:rgba(0,0,0,.32);padding:1px 6px;border-radius:4px}
+  .reload-toast .cnt{margin-left:auto;font-family:var(--mono);font-size:10px;color:#caa45f;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -235,6 +250,12 @@
   <div class="dots"></div>
   <div class="grain"></div>
   <div class="vignette"></div>
+</div>
+
+<div class="reload-toast" id="reloadToast" role="status">
+  <span class="ico"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg></span>
+  <span><b>Page reloaded mid-reply.</b> Your file-watcher restarts the browser when the backend writes <code>data/users/*.json</code>. Right-click the <code>frontend</code> folder and "Open with Live Server" to fix it.</span>
+  <span class="cnt" id="reloadCount"></span>
 </div>
 
 <div class="app">
@@ -695,10 +716,12 @@ async function send(text){
   if(current && !state.completed.includes(current)){ state.current = current; render(); }
   if(progress) applyProgress(progress);
 
-  const el = addMessage("agent", "", true);
-  await typeMessage(el.querySelector(".bubble-content"), reply);
+  // persist BEFORE animating — a file-watcher reload can no longer erase the reply
   state.messages.push({ role:"agent", content:reply });
   bumpActivity(); save();
+  markSent();
+  const el = addMessage("agent", "", true);
+  await typeMessage(el.querySelector(".bubble-content"), reply);
 
   state.busy = false; $("sendBtn").disabled = false; input.focus();
 }
@@ -747,6 +770,20 @@ box.addEventListener("scroll", ()=>{
 $("toBottom").addEventListener("click", scrollBottom);
 
 /* ================= boot ================= */
+function markSent(){ try{ sessionStorage.setItem("ml_lastSend", String(Date.now())); }catch(e){} }
+(function(){
+  let last = 0; try{ last = parseInt(sessionStorage.getItem("ml_lastSend")||"0",10); }catch(e){}
+  const gap = last ? Date.now() - last : Infinity;
+  const nav = (performance.getEntriesByType("navigation")[0]||{}).type;
+  if(last && gap < 8000 && nav === "reload"){
+    let n = 1; try{ n = parseInt(sessionStorage.getItem("ml_reloadCount")||"0",10)+1; }catch(e){}
+    try{ sessionStorage.setItem("ml_reloadCount", String(n)); }catch(e){}
+    const t = $("reloadToast");
+    if(t){ $("reloadCount").textContent = "#"+n;
+      requestAnimationFrame(()=> t.classList.add("show"));
+      setTimeout(()=> t.classList.remove("show"), 7000); }
+  }
+})();
 load(); render(); drawSpark(false);
 if(state.messages.length){
   state.messages.forEach(m=>addMessage(m.role, m.content));
