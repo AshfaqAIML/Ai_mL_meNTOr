@@ -299,6 +299,7 @@
     <div class="panel p3">
       <div class="plabel">Learner profile</div>
       <div class="chips-p">
+        <span class="pchip" id="nameChip">guest</span>
         <span class="pchip">beginner</span>
         <span class="pchip">python · basic</span>
         <span class="pchip">goal · job</span>
@@ -317,6 +318,10 @@
         <div class="ct-sub">python · data · ml · mlops</div>
       </div>
       <div class="ct-right">
+        <a href="login.html" id="switchLearner" style="font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-decoration:none;border:1px solid var(--line);background:rgba(255,255,255,.03);padding:7px 13px;border-radius:999px;color:var(--ink-soft);transition:.2s;display:inline-flex;align-items:center;gap:7px" onmouseover="this.style.borderColor='var(--mint)';this.style.color='var(--mint)';this.style.background='var(--mint-soft)'" onmouseout="this.style.borderColor='var(--line)';this.style.color='var(--ink-soft)';this.style.background='rgba(255,255,255,.03)'">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <span id="switchName"></span>
+        </a>
         <div class="mode" id="mode">
           <span class="dot" id="modeDot"></span>
           <span class="mode-state" id="modeState">DEMO</span>
@@ -365,7 +370,9 @@
 
 <script>
 /* ================= CONFIG ================= */
-const CONFIG = { API_URL: "http://127.0.0.1:8000", USER_ID: "default" };
+const _user = JSON.parse(localStorage.getItem("mlmentor_user")||"null");
+if(!_user){ window.location.href="login.html"; throw new Error("no user"); }
+const CONFIG = { API_URL: "http://127.0.0.1:8000", USER_ID: _user.id, DISPLAY_NAME: _user.name };
 
 const TOPICS = [
   { id:"python",    label:"Python basics" },
@@ -474,8 +481,9 @@ $("offlineX").addEventListener("click", ()=>$("offline").classList.remove("show"
 /* streak */
 (function(){
   const today = new Date().toDateString();
-  let s = JSON.parse(localStorage.getItem("mlmentor_streak")||"{}");
-  if(s.day!==today){ const y=new Date(Date.now()-864e5).toDateString(); s.count=(s.day===y)?(s.count||0)+1:1; s.day=today; localStorage.setItem("mlmentor_streak",JSON.stringify(s)); }
+  const streakKey = "mlmentor_streak_" + CONFIG.USER_ID;
+  let s = JSON.parse(localStorage.getItem(streakKey)||"{}");
+  if(s.day!==today){ const y=new Date(Date.now()-864e5).toDateString(); s.count=(s.day===y)?(s.count||0)+1:1; s.day=today; localStorage.setItem(streakKey,JSON.stringify(s)); }
   $("streakBadge").textContent = "⚡ "+s.count+" day"+(s.count>1?"s":"");
 })();
 
@@ -739,8 +747,9 @@ function applyProgress(p){
 }
 
 /* ================= persistence ================= */
-function save(){ localStorage.setItem("mlmentor_chat", JSON.stringify({ messages:state.messages.slice(-60), completed:state.completed, current:state.current })); }
-function load(){ try{ const d=JSON.parse(localStorage.getItem("mlmentor_chat")); if(d){ state.messages=d.messages||[]; state.completed=d.completed||[]; state.current=d.current||null; } }catch(e){} }
+const CHAT_KEY = "mlmentor_chat_" + CONFIG.USER_ID;
+function save(){ localStorage.setItem(CHAT_KEY, JSON.stringify({ messages:state.messages.slice(-60), completed:state.completed, current:state.current })); }
+function load(){ try{ const d=JSON.parse(localStorage.getItem(CHAT_KEY)); if(d){ state.messages=d.messages||[]; state.completed=d.completed||[]; state.current=d.current||null; } }catch(e){} }
 
 /* ================= events ================= */
 $("sendBtn").addEventListener("click", e=>{
@@ -784,6 +793,8 @@ function markSent(){ try{ sessionStorage.setItem("ml_lastSend", String(Date.now(
       setTimeout(()=> t.classList.remove("show"), 7000); }
   }
 })();
+$("switchName").textContent = CONFIG.DISPLAY_NAME;
+$("nameChip").textContent = CONFIG.DISPLAY_NAME;
 load(); render(); drawSpark(false);
 if(state.messages.length){
   state.messages.forEach(m=>addMessage(m.role, m.content));
