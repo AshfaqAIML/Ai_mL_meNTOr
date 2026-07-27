@@ -1,0 +1,35 @@
+[
+  {
+    "id": "python-basics",
+    "title": "Python Basics",
+    "level": "beginner",
+    "topics": [
+      "variables",
+      "loops",
+      "functions",
+      "lists",
+      "dictionaries"
+    ]
+  },
+  {
+    "id": "data-analysis",
+    "title": "Data Analysis",
+    "level": "beginner",
+    "topics": [
+      "NumPy",
+      "Pandas",
+      "data cleaning",
+      "visualization"
+    ]
+  },
+  {
+    "id": "machine-learning",
+    "title": "Machine Learning",
+    "level": "intermediate",
+    "topics": [
+      "regression",
+      "classification",
+      "model evaluation"
+    ]
+  }
+]
