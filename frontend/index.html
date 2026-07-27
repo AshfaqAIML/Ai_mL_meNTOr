@@ -368,11 +368,12 @@
   </main>
 </div>
 
+<script src="config.js"></script>
 <script>
 /* ================= CONFIG ================= */
 const _user = JSON.parse(localStorage.getItem("mlmentor_user")||"null");
 if(!_user){ window.location.href="login.html"; throw new Error("no user"); }
-const CONFIG = { API_URL: "http://127.0.0.1:8000", USER_ID: _user.id, DISPLAY_NAME: _user.name };
+const CONFIG = { API_URL: window.ML_MENTOR_API || "http://127.0.0.1:8000", USER_ID: _user.id, DISPLAY_NAME: _user.name };
 
 const TOPICS = [
   { id:"python",    label:"Python basics" },

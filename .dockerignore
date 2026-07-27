@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+.env
+.git/
+.vscode/
+node_modules/
+data/users/*.json
+.DS_Store
+*.md
+LICENSE
