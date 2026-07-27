@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Config Doctor · ML Mentor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#e9eef0; --paper2:#dde5e8; --panel:#ffffff;
+    --ink:#0f212b; --ink-soft:#4a5d66; --ink-faint:#8197a0;
+    --line:rgba(15,33,43,.12); --line2:rgba(15,33,43,.06);
+    --ok:#0f9d8c; --ok-deep:#0a7a6c; --ok-soft:rgba(15,157,140,.12);
+    --bad:#ff5424; --bad-deep:#d83c12; --bad-soft:rgba(255,84,36,.10);
+    --warn:#cf8400; --warn-soft:rgba(207,132,0,.12);
+    --shadow:0 18px 44px rgba(15,33,43,.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  ::selection{background:var(--bad);color:#fff}
+  html,body{min-height:100%}
+  body{
+    font-family:"DM Sans",sans-serif;color:var(--ink);background:var(--paper);
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      linear-gradient(var(--line2) 1px,transparent 1px) 0 0/100% 30px,
+      linear-gradient(90deg,var(--line2) 1px,transparent 1px) 0 0/30px 100%,
+      radial-gradient(120% 90% at 80% -10%,rgba(15,157,140,.07),transparent 55%),
+      radial-gradient(90% 80% at -10% 110%,rgba(255,84,36,.06),transparent 50%);
+  }
+  .drift{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+  .drift path{fill:none;stroke-width:2;stroke-dasharray:1600;animation:flow 16s linear infinite}
+  .drift .a{stroke:var(--ok);opacity:.16}
+  .drift .b{stroke:var(--bad);opacity:.13;animation-duration:23s;animation-direction:reverse}
+  @keyframes flow{to{stroke-dashoffset:-3200}}
+
+  .shell{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:42px 30px 70px}
+
+  .kicker{
+    font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--ok-deep);display:flex;align-items:center;gap:10px;
+    opacity:0;animation:rise .6s .05s forwards;
+  }
+  .kicker .led{width:8px;height:8px;border-radius:50%;background:var(--bad);box-shadow:0 0 0 0 var(--bad);animation:beat 1.6s infinite}
+  .kicker.aligned .led{background:var(--ok);animation-name:beatOk}
+  @keyframes beat{0%,100%{box-shadow:0 0 0 0 rgba(255,84,36,.5)}50%{box-shadow:0 0 0 7px rgba(255,84,36,0)}}
+  @keyframes beatOk{0%,100%{box-shadow:0 0 0 0 rgba(15,157,140,.5)}50%{box-shadow:0 0 0 7px rgba(15,157,140,0)}}
+  h1{
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+    font-size:clamp(40px,7.4vw,86px);line-height:.94;letter-spacing:-.03em;margin:14px 0 0;
+    opacity:0;animation:rise .7s .12s forwards;
+  }
+  h1 em{font-style:normal;color:var(--bad)}
+  .kicker.aligned ~ h1 em{color:var(--ok-deep)}
+  .lede{
+    max-width:60ch;margin-top:18px;font-size:17px;line-height:1.6;color:var(--ink-soft);
+    opacity:0;animation:rise .7s .2s forwards;
+  }
+  .lede b{color:var(--ink);font-weight:500}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+  .grid{display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);gap:26px;margin-top:40px}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+
+  .verdict{
+    position:sticky;top:30px;align-self:start;
+    background:var(--ink);color:#eef4f3;border-radius:6px;padding:30px 28px 26px;
+    box-shadow:var(--shadow);overflow:hidden;opacity:0;animation:rise .7s .28s forwards;
+  }
+  .verdict::after{content:"";position:absolute;left:0;top:0;height:5px;width:100%;background:var(--bad);transition:background .4s}
+  .verdict.aligned::after{background:var(--ok)}
+  .verdict.warn::after{background:var(--warn)}
+  .verdict .vlabel{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#7fa6a0}
+  .verdict .vword{
+    font-family:"Bricolage Grotesque",sans-serif;font-weight:800;letter-spacing:-.02em;
+    font-size:clamp(40px,6vw,64px);line-height:.95;margin-top:8px;color:#fff;
+  }
+  .verdict .vword .glow{color:var(--bad)}
+  .verdict.aligned .vword .glow{color:#5fe6c8}
+  .verdict.warn .vword .glow{color:#ffce6b}
+  .verdict .vdesc{margin-top:14px;font-size:14.5px;line-height:1.6;color:#bcd3cd}
+  .scan{height:2px;background:linear-gradient(90deg,transparent,#5fe6c8,transparent);margin-top:22px;transform:scaleX(0);transform-origin:left;opacity:0}
+  .scan.run{animation:sweep .8s ease}
+  @keyframes sweep{0%{transform:scaleX(0);opacity:0}15%{opacity:1}100%{transform:scaleX(1);opacity:0}}
+  .vmeta{margin-top:18px;display:flex;gap:18px;font-family:"JetBrains Mono",monospace;font-size:11px;color:#7fa6a0}
+  .vmeta b{color:#dff0ec;font-weight:700}
+
+  .panel{
+    background:var(--panel);border:1px solid var(--line);border-radius:6px;
+    box-shadow:var(--shadow);opacity:0;animation:rise .7s .34s forwards;
+  }
+  .panel + .panel{margin-top:22px}
+  .phead{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:16px 22px;border-bottom:1px solid var(--line);
+  }
+  .phead h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:18px;letter-spacing:-.01em}
+  .phead .tag{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)}
+  .pbody{padding:20px 22px}
+
+  .paste{
+    width:100%;min-height:96px;resize:vertical;border:1.5px dashed var(--line);
+    border-radius:5px;padding:13px 14px;font-family:"JetBrains Mono",monospace;font-size:12.5px;
+    line-height:1.6;color:var(--ink);background:var(--paper);transition:border-color .2s,background .2s;
+  }
+  .paste:focus{outline:none;border-color:var(--ok);background:#fff}
+  .paste::placeholder{color:var(--ink-faint)}
+  .privacy{margin-top:9px;font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint);letter-spacing:.04em}
+  .privacy .lock{color:var(--ok-deep)}
+
+  .fields{display:grid;gap:13px;margin-top:18px}
+  .field{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:12px}
+  .field label{font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+  .field input{
+    width:100%;border:1px solid var(--line);border-radius:5px;padding:10px 12px;
+    font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--ink);background:#fff;transition:border-color .2s,box-shadow .2s;
+  }
+  .field input:focus{outline:none;border-color:var(--ok);box-shadow:0 0 0 3px var(--ok-soft)}
+
+  .checks{display:flex;flex-direction:column}
+  .check{
+    display:grid;grid-template-columns:30px 1fr minmax(0,1.4fr);align-items:center;gap:14px;
+    padding:15px 6px;border-bottom:1px solid var(--line2);transition:transform .18s,background .18s;cursor:default;
+  }
+  .check:last-child{border-bottom:none}
+  .check:hover{transform:translateX(6px);background:linear-gradient(90deg,var(--paper),transparent)}
+  .check .dot{width:13px;height:13px;border-radius:50%;background:var(--ink-faint);position:relative;transition:background .3s}
+  .check.ok .dot{background:var(--ok)}
+  .check.bad .dot{background:var(--bad);animation:pulseBad 1.4s infinite}
+  .check.warn .dot{background:var(--warn)}
+  @keyframes pulseBad{0%,100%{box-shadow:0 0 0 0 rgba(255,84,36,.5)}50%{box-shadow:0 0 0 6px rgba(255,84,36,0)}}
+  .check .clabel{font-size:14px;font-weight:500}
+  .check .clabel small{display:block;font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint);margin-top:3px;letter-spacing:.03em}
+  .check .cval{
+    font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-soft);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .check.bad .cval{color:var(--bad-deep)}
+  .check.ok .cval{color:var(--ok-deep)}
+
+  .rx{display:none}
+  .rx.show{display:block}
+  .rx .rxline{
+    display:flex;align-items:center;gap:10px;background:var(--ink);border-radius:5px;
+    padding:11px 12px 11px 14px;margin-bottom:9px;
+  }
+  .rx .rxline .k{font-family:"JetBrains Mono",monospace;font-size:11px;color:#7fa6a0;flex:none;width:108px}
+  .rx .rxline .v{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:#dff0ec;flex:1;word-break:break-all}
+  .rx .rxline .v .hl{color:#5fe6c8}
+  .copy{
+    flex:none;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+    background:none;border:1px solid rgba(95,230,200,.35);color:#5fe6c8;border-radius:4px;padding:4px 9px;cursor:pointer;transition:all .15s;
+  }
+  .copy:hover{background:#5fe6c8;color:var(--ink)}
+  .rx .note{margin-top:6px;font-size:13px;line-height:1.55;color:var(--ink-soft)}
+  .rx .note b{color:var(--ink)}
+
+  .foot{margin-top:34px;font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--ink-faint);letter-spacing:.06em;text-align:center}
+  :focus-visible{outline:2px solid var(--warn);outline-offset:2px}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.check,.verdict,.panel,h1,.kicker,.lede{opacity:1!important;transform:none!important}}
+</style>
+</head>
+<body>
+
+<svg class="drift" viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden="true">
+  <path class="a" d="M-40,760 C240,720 360,560 600,520 C840,480 980,360 1180,320 C1320,292 1410,250 1500,230"/>
+  <path class="b" d="M-40,840 C260,820 420,660 640,610 C880,556 1020,440 1240,392 C1380,360 1460,312 1520,292"/>
+</svg>
+
+<div class="shell">
+
+  <div class="kicker" id="kicker"><span class="led"></span><span id="kickerText">env mismatch detector · client-side</span></div>
+  <h1>Your <em>.env</em> is lying<br>to your backend.</h1>
+  <p class="lede">Three lines must agree on the <b>same provider</b> — the key, the URL, and the model. Mix a Grok key with a Groq URL (or a Llama model with an xAI endpoint) and every request dies with a 401/404, so the chat silently falls back to its canned demo reply. Paste your lines below and the doctor names the contradiction.</p>
+
+  <div class="grid">
+
+    <aside class="verdict" id="verdict">
+      <div class="vlabel">diagnosis</div>
+      <div class="vword" id="vword"><span class="glow">MISMATCH</span></div>
+      <div class="vdesc" id="vdesc">Your key belongs to one provider but the URL points at another. The backend is knocking on the wrong door.</div>
+      <div class="scan" id="scan"></div>
+      <div class="vmeta">
+        <span>key → <b id="mKey">?</b></span>
+        <span>url → <b id="mUrl">?</b></span>
+        <span>model → <b id="mModel">?</b></span>
+      </div>
+    </aside>
+
+    <div>
+      <section class="panel">
+        <div class="phead"><h2>Paste your .env</h2><span class="tag">auto-parsed</span></div>
+        <div class="pbody">
+          <textarea class="paste" id="paste" spellcheck="false" placeholder="LLM_API_KEY=xai-...&#10;LLM_API_URL=https://api.x.ai/v1/chat/completions&#10;MODEL_NAME=grok-4"></textarea>
+          <div class="privacy"><span class="lock">🔒</span> parsed in your browser only — never sent anywhere</div>
+
+          <div class="fields">
+            <div class="field"><label>API key</label><input id="fKey" type="text" autocomplete="off" spellcheck="false"></div>
+            <div class="field"><label>API url</label><input id="fUrl" type="text" autocomplete="off" spellcheck="false"></div>
+            <div class="field"><label>model</label><input id="fModel" type="text" autocomplete="off" spellcheck="false"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="phead"><h2>Provider agreement</h2><span class="tag">3 checks</span></div>
+        <div class="pbody">
+          <div class="checks" id="checks">
+            <div class="check" id="cKey"><span class="dot"></span><span class="clabel">Key provider<small>read from the key prefix</small></span><span class="cval" id="vKey">—</span></div>
+            <div class="check" id="cUrl"><span class="dot"></span><span class="clabel">URL provider<small>read from the host</small></span><span class="cval" id="vUrl">—</span></div>
+            <div class="check" id="cModel"><span class="dot"></span><span class="clabel">Model provider<small>matched against known models</small></span><span class="cval" id="vModel">—</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="phead"><h2>Prescription</h2><span class="tag">copy &amp; restart</span></div>
+        <div class="pbody">
+          <div class="rx show" id="rx">
+            <div class="rxline"><span class="k">LLM_API_KEY</span><span class="v" id="rxKey">—</span><button class="copy" data-copy="key">copy</button></div>
+            <div class="rxline"><span class="k">LLM_API_URL</span><span class="v" id="rxUrl">—</span><button class="copy" data-copy="url">copy</button></div>
+            <div class="rxline"><span class="k">MODEL_NAME</span><span class="v" id="rxModel">—</span><button class="copy" data-copy="model">copy</button></div>
+            <button class="copy" data-copy="all" style="margin-top:4px;border-color:var(--line);color:var(--ink-soft)">copy all three lines</button>
+            <p class="note" id="rxNote"></p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="foot">after editing .env → save → Ctrl+C the backend → python run.py · dotenv reads the file only at startup</div>
+</div>
+
+<script>
+const URLS = {
+  groq:   "https://api.groq.com/openai/v1/chat/completions",
+  xai:    "https://api.x.ai/v1/chat/completions",
+  openai: "https://api.openai.com/v1/chat/completions",
+  gemini: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+  ollama: "http://localhost:11434/v1/chat/completions"
+};
+const MODELS = {
+  groq:   ["llama-3.3-70b-versatile","llama-3.1-8b-instant","llama-3.1-70b-versatile","meta-llama/llama-4-scout-17b-16e-instruct","openai/gpt-oss-120b"],
+  xai:    ["grok-4","grok-4-0709","grok-3","grok-3-mini","grok-3-mini-fast","grok-2-latest","grok-2-1212"],
+  openai: ["gpt-4o-mini","gpt-4o","gpt-4.1-mini","gpt-4.1","o3-mini","o4-mini"],
+  gemini: ["gemini-2.5-flash","gemini-2.5-pro","gemini-2.0-flash","gemini-1.5-flash"],
+  ollama: ["llama3.2","llama3.1:8b","qwen2.5:7b","mistral"]
+};
+const RECOMMEND = { groq:"llama-3.3-70b-versatile", xai:"grok-4", openai:"gpt-4o-mini", gemini:"gemini-2.5-flash", ollama:"llama3.1:8b" };
+const LABEL = { groq:"Groq", xai:"xAI · Grok", openai:"OpenAI", gemini:"Google Gemini", ollama:"Ollama (local)" };
+
+function keyProvider(k){
+  k=(k||"").trim();
+  if(/^gsk_/i.test(k)) return "groq";
+  if(/^xai-/i.test(k)) return "xai";
+  if(/^AIza/i.test(k)) return "gemini";
+  if(/^sk-/i.test(k)) return "openai";
+  return null;
+}
+function urlProvider(u){
+  u=(u||"").toLowerCase();
+  if(u.includes("groq.com")) return "groq";
+  if(u.includes("x.ai")) return "xai";
+  if(u.includes("openai.com")) return "openai";
+  if(u.includes("googleapis.com")) return "gemini";
+  if(u.includes("11434")) return "ollama";
+  return null;
+}
+function modelProvider(m){
+  m=(m||"").trim().toLowerCase(); if(!m) return null;
+  for(const p in MODELS){ if(MODELS[p].map(x=>x.toLowerCase()).includes(m)) return p; }
+  return null;
+}
+
+const $=id=>document.getElementById(id);
+const fKey=$("fKey"), fUrl=$("fUrl"), fModel=$("fModel"), paste=$("paste");
+
+paste.addEventListener("input",()=>{
+  const map={};
+  paste.value.split(/\r?\n/).forEach(line=>{
+    const t=line.trim(); if(!t||t.startsWith("#")) return;
+    const i=t.indexOf("="); if(i<0) return;
+    map[t.slice(0,i).trim().toLowerCase()] = t.slice(i+1).trim().replace(/^["']|["']$/g,"");
+  });
+  if(map["llm_api_key"]!==undefined)  fKey.value  = map["llm_api_key"];
+  if(map["llm_api_url"]!==undefined)  fUrl.value  = map["llm_api_url"];
+  if(map["model_name"]!==undefined)   fModel.value= map["model_name"];
+  diagnose();
+});
+[fKey,fUrl,fModel].forEach(el=>el.addEventListener("input",diagnose));
+
+function setCheck(rowId,valId,state,text){
+  const row=$(rowId); row.className="check "+state;
+  $(valId).textContent=text;
+}
+
+function diagnose(){
+  const key=fKey.value, url=fUrl.value, model=fModel.value;
+  const kp=keyProvider(key), up=urlProvider(url), mp=modelProvider(model);
+
+  setCheck("cKey","vKey", kp?"ok":(key.trim()?"warn":""), kp?LABEL[kp]:(key.trim()?"unrecognised prefix":"(empty)"));
+  setCheck("cUrl","vUrl", up?"ok":(url.trim()?"warn":""), up?LABEL[up]:(url.trim()?"unknown host":"(empty)"));
+  setCheck("cModel","vModel", mp?( (kp&&mp===kp)||(up&&mp===up) ?"ok":"bad" ):(model.trim()?"warn":""),
+           mp?LABEL[mp]+" · "+model:(model.trim()?"not in any known list":"(empty)"));
+
+  const conflicts=[];
+  if(kp&&up&&kp!==up) conflicts.push("key≠url");
+  if(kp&&mp&&kp!==mp) conflicts.push("key≠model");
+  if(up&&mp&&up!==mp) conflicts.push("url≠model");
+
+  const v=$("verdict"), word=$("vword"), desc=$("vdesc");
+  $("mKey").textContent  = kp?LABEL[kp]:"?";
+  $("mUrl").textContent  = up?LABEL[up]:"?";
+  $("mModel").textContent= mp?LABEL[mp]:(model.trim()?"?":"—");
+
+  const sweep=()=>{const s=$("scan");s.classList.remove("run");void s.offsetWidth;s.classList.add("run");};
+
+  if(conflicts.length){
+    v.className="verdict"; $("kicker").className="kicker";
+    word.innerHTML='<span class="glow">MISMATCH</span>';
+    desc.textContent="Conflict detected: "+conflicts.join(", ")+". Your "+(kp?LABEL[kp]:"key")+" credentials are being sent to "+(up?LABEL[up]:"a different")+" endpoint. That request cannot succeed.";
+    $("kickerText").textContent="env mismatch detector · conflict found";
+  } else if(!kp){
+    v.className="verdict warn"; $("kicker").className="kicker";
+    word.innerHTML='<span class="glow">NO KEY</span>';
+    desc.textContent="I can't read a provider from the key. Paste a line that starts with gsk_ (Groq), xai- (Grok), sk- (OpenAI) or AIza (Gemini).";
+    $("kickerText").textContent="env mismatch detector · key unreadable";
+  } else if(!mp){
+    v.className="verdict warn"; $("kicker").className="kicker";
+    word.innerHTML='<span class="glow">CHECK MODEL</span>';
+    desc.textContent="Key and URL agree on "+LABEL[kp]+", but "+(model.trim()?('"'+model+'"'):"the model field")+" isn't on that provider's known list — likely a typo or a retired name.";
+    $("kickerText").textContent="env mismatch detector · model unverified";
+  } else {
+    v.className="verdict aligned"; $("kicker").className="kicker aligned";
+    word.innerHTML='<span class="glow">ALIGNED</span>';
+    desc.textContent="All three lines point at "+LABEL[kp]+". The fallback you saw was from an earlier run — restart the backend and the badge should turn green.";
+    $("kickerText").textContent="env mismatch detector · all clear";
+  }
+  sweep();
+  writeRx(kp||up, kp, model);
+}
+
+let rxValues={key:"",url:"",model:""};
+function writeRx(baseProvider,kp,model){
+  const rx=$("rx"); rx.classList.add("show");
+  const keepKey = kp ? fKey.value.trim() : "xai-your-real-key-here";
+  const recModel = RECOMMEND[baseProvider] || model || "grok-4";
+  rxValues={key:keepKey, url:URLS[baseProvider]||"", model:recModel};
+
+  $("rxKey").innerHTML = esc(keepKey);
+  $("rxUrl").innerHTML = '<span class="hl">'+esc(URLS[baseProvider]||"")+'</span>';
+  $("rxModel").innerHTML = '<span class="hl">'+esc(recModel)+'</span>';
+
+  const note=$("rxNote");
+  if(baseProvider==="groq"){
+    note.innerHTML = "Aligned to <b>Groq</b>. Free tier available. Recommended model: <b>"+recModel+"</b>. Get a key at console.groq.com.";
+  } else if(baseProvider==="xai"){
+    note.innerHTML = "For Grok, use <b>grok-4</b> for best teaching + code-review quality, or <b>grok-3-mini</b> while iterating. Confirm model ID at console.x.ai.";
+  } else if(baseProvider==="openai"){
+    note.innerHTML = "Aligned to <b>OpenAI</b>. Recommended model: <b>"+recModel+"</b>. Paid — check your usage at platform.openai.com.";
+  } else if(baseProvider==="gemini"){
+    note.innerHTML = "Aligned to <b>Google Gemini</b>. Free tier available. Recommended: <b>"+recModel+"</b>.";
+  } else if(baseProvider==="ollama"){
+    note.innerHTML = "Aligned to <b>Ollama (local)</b>. No API key needed. Make sure Ollama is running: <b>ollama serve</b>.";
+  } else {
+    note.innerHTML = "Couldn't detect a provider — start from a known key prefix.";
+  }
+}
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+document.querySelectorAll(".copy").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const which=btn.dataset.copy;
+    let txt;
+    if(which==="all") txt="LLM_API_KEY="+rxValues.key+"\nLLM_API_URL="+rxValues.url+"\nMODEL_NAME="+rxValues.model;
+    else if(which==="key") txt=rxValues.key;
+    else if(which==="url") txt=rxValues.url;
+    else txt=rxValues.model;
+    copyText(txt,btn);
+  });
+});
+function copyText(txt,btn){
+  const done=()=>{const o=btn.textContent;btn.textContent="copied ✓";setTimeout(()=>btn.textContent=o,1300);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done).catch(()=>fallback(txt,done));
+  } else fallback(txt,done);
+}
+function fallback(txt,done){
+  const ta=document.createElement("textarea");ta.value=txt;ta.style.position="fixed";ta.style.opacity="0";
+  document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);done();
+}
+
+diagnose();
+</script>
+</body>
+</html>
